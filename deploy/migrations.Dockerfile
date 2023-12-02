@@ -1,8 +1,6 @@
 FROM node:latest
 
 RUN mkdir /app
-# create this bin dir just for postinstall
-RUN mkdir -p /app/deploy/bin
 WORKDIR /app
 
 ADD src /app/src

@@ -31,6 +31,7 @@ provider:
   environment: ${self:custom.envByStage.${self:provider.stage}}
 
 plugins:
+  - ./deploy/plugins/run-remote-migrations.js
   - serverless-plugin-typescript
   - serverless-domain-manager
   - serverless-offline
