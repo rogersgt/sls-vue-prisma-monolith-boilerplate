@@ -1,0 +1,38 @@
+{
+  "name": "sls-prisma-typescript-boilerplate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint src",
+    "start": "nodemon --inspect node_modules/serverless/bin/serverless.js offline start",
+    "deploy": "serverless deploy --stage prod",
+    "db:gen:client": "prisma generate client",
+    "db:migrate:dev": "prisma migrate dev && npm run db:gen:client"
+  },
+  "author": "Grady T Rogers",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/express": "4.17.21",
+    "@typescript-eslint/eslint-plugin": "6.13.1",
+    "chai": "4.3.10",
+    "eslint": "8.55.0",
+    "mocha": "10.2.0",
+    "nodemon": "3.0.2",
+    "prisma": "5.6.0",
+    "serverless": "3.38.0",
+    "serverless-offline": "13.3.0",
+    "serverless-plugin-typescript": "2.1.5"
+  },
+  "dependencies": {
+    "cookie-parser": "1.4.6",
+    "cors": "2.8.5",
+    "express": "4.18.2",
+    "serverless-http": "3.2.0",
+    "typescript": "5.3.2",
+    "vue": "3.3.9"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  }
+}

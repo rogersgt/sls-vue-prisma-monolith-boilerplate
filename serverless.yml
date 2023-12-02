@@ -1,0 +1,73 @@
+service: ${env:APP_NAME}
+frameworkVersion: '3'
+
+useDotenv: true
+
+configValidationMode: warn
+
+deprecationNotificationMode: warn:summary
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${env:STAGE, 'dev'}
+  stackName: ${self:service}-${self:provider.stage}
+  region: ${env:AWS_REGION, 'us-east-1'}
+  eventBridge:
+    useCloudFormation: true
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter*
+          Resource:
+            - arn:aws:ssm:${self:provider.region}:${aws:accountId}:parameter/${self:provider.stage}/${self:service}
+            - arn:aws:ssm:${self:provider.region}:${aws:accountId}:parameter/${self:provider.stage}/${self:service}/*
+  timeout: 15
+  environment: ${self:custom.envByStage.${self:provider.stage}}
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-domain-manager
+  - serverless-offline
+
+custom:
+  httpPort: ${env:HTTP_PORT, 3000}
+  socketPort: ${env:SOCKET_PORT, 3001}
+  serverless-offline:
+    httpPort: ${self:custom.httpPort}
+    # httpsProtocol: ''
+    # corsAllowHeaders: "*"
+    # corsAllowOrigin: ${env:ALLOW_CORS_ORIGIN}
+  # API Domain Configuration
+  customDomain:
+    http:
+      domainName: ${env:API_DOMAIN_NAME}
+      stage: ${self:provider.stage}
+      basePath: ''
+      certificateArn: ${env:AWS_ACM_CERTIFICATE_ARN}
+      createRoute53Record: true
+      endpointType: REGIONAL
+      securityPolicy: tls_1_2
+      apiType: http
+      autoDomain: true
+  envByStage:
+    dev:
+      APP_NAME: ${self:service}
+      LOG_LEVEL: ${env:LOG_LEVEL, 'debug'}
+      STAGE: ${self:provider.stage}
+      LOCALSTACK_ENDPOINT: http://localhost:4567
+    prod:
+      APP_NAME: ${self:service}
+      LOG_LEVEL: ${env:LOG_LEVEL, 'debug'}
+      STAGE: ${self:provider.stage}
+
+functions:
+  api:
+    handler: src/index.api
+    events:
+      - httpApi: '*'

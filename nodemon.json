@@ -1,0 +1,22 @@
+{
+  "restartable": "rs",
+  "delay": 1000,
+  "ignore": [
+    ".git",
+    "node_modules/**/node_modules"
+  ],
+  "verbose": true,
+  "execMap": {
+    "js": "node --harmony"
+  },
+  "watch": [
+    "src/",
+    "node_modules/@prisma/client/"
+  ],
+  "env": {
+    "NODE_ENV": "development",
+    "NODE_OPTIONS": "--max-old-space-size=2048",
+    "SLS_DEBUG": "*"
+  },
+  "ext": "js,ts,json"
+}

@@ -1,0 +1,33 @@
+version: '3'
+services:
+
+  localstack:
+    image: localstack/localstack
+    ports:
+      - 4568:4566
+    environment:
+      - SERVICES=dynamodb,events,sqs
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=${DATA_DIR- }
+      - PORT_WEB_UI=${PORT_WEB_UI- }
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - data:/var/lib/localstack
+
+  postgres:
+    image: postgres:15.4
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: root
+      POSTGRES_DB: app
+    ports:
+      - 5434:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  data:
+  db_data:

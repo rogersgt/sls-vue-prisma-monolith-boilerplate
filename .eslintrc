@@ -1,0 +1,42 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "indent": [
+      "error",
+      2
+    ],
+    "require-jsdoc": 0,
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 124
+      }
+    ],
+    "semi": 0,
+    "no-invalid-this": 0
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "globals": {
+    "console": true,
+    "process": true,
+    "module": true,
+    "require": true,
+    "Promise": true,
+    "Buffer": true,
+    "setTimeout": true
+  }
+}
