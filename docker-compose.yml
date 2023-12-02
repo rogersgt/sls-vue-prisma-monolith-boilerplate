@@ -28,6 +28,17 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  db-migrations:
+    depends_on:
+      - postgres
+    build:
+      context: .
+      dockerfile: ./deploy/migrations.Dockerfile
+    volumes:
+      - ./prisma:/app/prisma
+    environment:
+      DATABASE_URL: postgres://root:pass@postgres:5432/app
+
 volumes:
   data:
   db_data:

@@ -8,7 +8,9 @@
     "start": "nodemon --inspect node_modules/serverless/bin/serverless.js offline start",
     "deploy": "serverless deploy --stage prod",
     "db:gen:client": "prisma generate client",
-    "db:migrate:dev": "prisma migrate dev && npm run db:gen:client"
+    "db:migrate:dev": "prisma migrate dev && npm run db:gen:client",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "postinstall": "chmod -R +x deploy/bin"
   },
   "author": "Grady T Rogers",
   "license": "UNLICENSED",
