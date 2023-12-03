@@ -31,7 +31,7 @@ provider:
   environment: ${self:custom.envByStage.${self:provider.stage}}
 
 plugins:
-  - ./deploy/plugins/run-remote-migrations.js
+  - ./deploy/plugins/serverless-run-remote-migrations/index.js
   - serverless-plugin-typescript
   - serverless-domain-manager
   - serverless-offline
@@ -66,6 +66,12 @@ custom:
       APP_NAME: ${self:service}
       LOG_LEVEL: ${env:LOG_LEVEL, 'debug'}
       STAGE: ${self:provider.stage}
+  serverless-run-remote-migrations:
+    build:
+      dockerfile: ./deploy/migrations.Dockerfile
+      context: .
+    deploy:
+      aws: true
 
 functions:
   api:

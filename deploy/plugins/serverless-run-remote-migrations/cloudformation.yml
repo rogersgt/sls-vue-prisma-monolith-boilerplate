@@ -1,0 +1,25 @@
+AWSTemplateVersion: '2010-09-09'
+Description: Database migrations task
+
+Parameters:
+  RepoName:
+    Type: String
+
+  ImageTag:
+    Type: string
+    Default: latest
+
+  Cpu:
+    Type: Number
+    Default: 256
+
+  Memory:
+    Type: Number
+    Default: 
+
+Resources:
+  Task:
+    Type: AWS::ECS::Task
+    Properties:
+      ContainerDefinitions:
+        - Name: !Sub '${RepoName}-migrations'
