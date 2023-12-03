@@ -44,7 +44,7 @@ class ServerlessRunRemoteMigrations {
     return uriName;
   }
 
-  async upsertECrRepo() {
+  async upsertECRRepo() {
     const ecrCient = new ECRClient();
     const appName = this.serverless.service.service;
     
