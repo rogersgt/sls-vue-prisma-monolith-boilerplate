@@ -16,6 +16,8 @@ custom:
       dockerfile: path/to/Dockerfile
       context: . # See https://docs.docker.com/build/building/context
     deploy:
+      cpu: 256
+      memory: 512
       # currently only aws is supported (although you can run images from Dockerhub or anywhere)
       aws:
         vpc:
