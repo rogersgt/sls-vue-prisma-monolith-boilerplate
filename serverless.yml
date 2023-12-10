@@ -13,7 +13,7 @@ package:
 provider:
   name: aws
   runtime: nodejs18.x
-  stage: ${env:STAGE, 'dev'}
+  stage: ${opt:stage, 'dev'}
   stackName: ${self:service}-${self:provider.stage}
   region: ${env:AWS_REGION, 'us-east-1'}
   eventBridge:
@@ -70,6 +70,7 @@ custom:
     build:
       dockerfile: ./deploy/migrations.Dockerfile
       context: .
+      tag: ${env:COMMIT_SHA}
     deploy:
       aws: true
 

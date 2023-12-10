@@ -2,8 +2,19 @@
 const serverless = require('serverless'); // eslint-disable-line no-unused-vars
 const childProcess = require('child_process');
 const { STSClient, GetCallerIdentityCommand } = require('@aws-sdk/client-sts');
-const { ECRClient, DescribeRepositoriesCommand, CreateRepositoryCommand, GetAuthorizationTokenCommand } = require('@aws-sdk/client-ecr');
-const { CloudFormationClient, DescribeStacksCommand, CreateStackCommand, UpdateStackCommand } = require('@aws-sdk/client-cloudformation');
+const {
+  ECRClient,
+  DescribeRepositoriesCommand,
+  CreateRepositoryCommand,
+  GetAuthorizationTokenCommand,
+} = require('@aws-sdk/client-ecr');
+const {
+  CloudFormationClient,
+  DescribeStacksCommand,
+  CreateStackCommand,
+  UpdateStackCommand,
+} = require('@aws-sdk/client-cloudformation');
+const { ECSClient, RunTaskCommand, DescribeTasksCommand } = require('@aws-sdk/client-ecs');
 const { readFileSync } = require('fs');
 const { normalize, join } = require('path');
 const Dockerode = require('dockerode');
@@ -180,9 +191,7 @@ class ServerlessRunRemoteMigrations {
   async getFullImageUri() {
     if (!this.image) {
       const repoUri = await this.getRepoUri();
-      const now = new Date();
-      // const tag = now.valueOf();
-      const tag = 'latest';
+      const { } = this.getConfig() || {};
       this.image = `${repoUri}:${tag}`;
     }
     return this.image;
@@ -256,7 +265,6 @@ class ServerlessRunRemoteMigrations {
     ];
 
       await this.upsertCloudformationStack(normalize(join(__dirname, 'cloudformation.yml')), parameters, taskStackName);
-
     }
   }
 }
