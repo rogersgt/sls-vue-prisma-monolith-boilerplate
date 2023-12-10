@@ -191,7 +191,7 @@ class ServerlessRunRemoteMigrations {
   async getFullImageUri() {
     if (!this.image) {
       const repoUri = await this.getRepoUri();
-      const { } = this.getConfig() || {};
+      const { tag = 'latest' } = this.getConfig() || {};
       this.image = `${repoUri}:${tag}`;
     }
     return this.image;
