@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({
-  origin: process.env.ALLOW_CORS_ORIGIN || '*',
+  origin: process.env.ALLOW_CORS_ORIGIN,
   credentials: true,
 }));
 app.use(cookies());
