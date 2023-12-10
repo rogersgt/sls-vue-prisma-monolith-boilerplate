@@ -71,7 +71,8 @@ custom:
       context: .
       tag: ${env:COMMIT_SHA, 'latest'}
     deploy:
-      aws: true
+      aws:
+        stackName: ${self:service}-${self:provider.stage}-db-migrations
 
 functions:
   api:

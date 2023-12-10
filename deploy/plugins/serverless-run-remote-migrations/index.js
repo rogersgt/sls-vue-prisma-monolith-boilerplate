@@ -18,6 +18,7 @@ const { ECSClient, RunTaskCommand, DescribeTasksCommand } = require('@aws-sdk/cl
 const { readFileSync } = require('fs');
 const { normalize, join } = require('path');
 const Dockerode = require('dockerode');
+const { EC2Client, DescribeVpcsCommand, DescribeSubnetsCommand, DescribeSecurityGroupsCommand } = require('@aws-sdk/client-ec2');
 
 class ServerlessRunRemoteMigrations {
   /**
@@ -31,10 +32,20 @@ class ServerlessRunRemoteMigrations {
     this.name = 'serverless-run-remote-migrations';
     this.log = log;
     this.writeText = writeText;
-    const { region = 'us-east-1', docker = {} } = this.getConfig();
+    const { region = 'us-east-1', docker = {}, deploy = {} } = this.getConfig();
     this.region = region;
     this.docker = new Dockerode({ ...docker });
 
+    this.awsCreds = {
+      region,
+    };
+
+    if (deploy.aws) {
+      this.ecsClient = new ECSClient(this.awsCreds);
+      this.cloudformationClient = new CloudFormationClient(this.awsCreds);
+      this.ecrClient = new ECRClient(this.awsCreds);
+      this.ec2Client = new EC2Client(this.awsCreds);
+    }
     this.hooks = {
       // 'package:finalize': this.buildImage.bind(this),
       'before:deploy:deploy': this.runRemoteMigrations.bind(this),
@@ -42,26 +53,30 @@ class ServerlessRunRemoteMigrations {
   }
 
   getTaskStackName() {
+    const { deploy = {} } = this.getConfig();
+    const { stackName } = deploy.aws ?? {};
+    if (stackName) return `${stackName}`;
     const appName = this.serverless.service.service;
-    const stage = this.serverless.service.provider.region;
+    const stage = this.serverless.service.provider.stage;
     return `${appName}-${stage}-migrations`;
   }
 
   async ecrLogin() {
-    const client = new ECRClient();
+    const client = this.ecrClient || new ECRClient(this.awsCreds);
     const cmd = new GetAuthorizationTokenCommand();
     const resp = await client.send(cmd);
     return resp;
   }
 
   async upsertCloudformationStack(templatePath, parameters, stackName) {
-    const client = new CloudFormationClient();
+    const client = this.cloudformationClient || new CloudFormationClient(this.awsCreds);
 
     try {
       const cmd = new CreateStackCommand({
         StackName: stackName,
         TemplateBody: readFileSync(templatePath),
         Parameters: parameters,
+        Capabilities: ['CAPABILITY_IAM']
       });
       await client.send(cmd);
     } catch (error) {
@@ -72,11 +87,11 @@ class ServerlessRunRemoteMigrations {
         StackName: stackName,
         TemplateBody: readFileSync(templatePath),
         Parameters: parameters,
+        Capabilities: ['CAPABILITY_IAM']
       });
       try {
         await client.send(cmd);
       } catch (error) {
-        // console.log(JSON.stringify(error));
         if (!error.message || error.message !== 'No updates are to be performed.') {
           throw error;
         }
@@ -84,12 +99,12 @@ class ServerlessRunRemoteMigrations {
     }
 
     await this.waitForStack(stackName);
+    return this.getStack(stackName);
   }
 
   async waitForStack(stackName) {
-    const resp = await this.getStack(stackName);
-    const { Stacks = [] } = resp;
-    const stack = Stacks.pop();
+    const stack = await this.getStack(stackName);
+
     if (stack) {
       const { StackStatus } = stack;
       if (StackStatus.includes('FAILED') || StackStatus.includes('ROLLBACK')) {
@@ -101,16 +116,22 @@ class ServerlessRunRemoteMigrations {
         return this.waitForStack(stackName);
       }
 
-      return true;
+      return stack;
+    } else {
+      throw new Error(`${stackName} not found`);
     }
   }
 
   async getStack(stackName) {
-    const client = new CloudFormationClient();
+    const client = this.cloudformationClient || new CloudFormationClient(this.awsCreds);
     const cmd = new DescribeStacksCommand({
       StackName: stackName,
     });
-    return client.send(cmd);
+    const { Stacks: stacks = [] } = await client.send(cmd);
+    if (!stacks.length) {
+      throw new Error(`Stack: ${stackName} not found`);
+    }
+    return stacks[0];
   }
 
   getRepoName() {
@@ -154,17 +175,17 @@ class ServerlessRunRemoteMigrations {
   }
 
   async getAccountId() {
-    const stsClient = new STSClient();
+    const stsClient = new STSClient(this.awsCreds);
     const cmd = new GetCallerIdentityCommand();
     const { Account } = await stsClient.send(cmd);
     return String(Account);
   }
 
   async getRepoUri() {
-    const { aws = {} } = this.getConfig();
+    const { deploy = {} } = this.getConfig();
 
     let uriName = this.getRepoName();
-    if (aws) {
+    if (deploy.aws) {
       const accountId = await this.getAccountId();
       uriName = `${accountId}.dkr.ecr.${this.region}.amazonaws.com/${uriName}`;
     }
@@ -172,7 +193,7 @@ class ServerlessRunRemoteMigrations {
   }
 
   async upsertECRRepo() {
-    const ecrCient = new ECRClient();
+    const ecrCient = this.ecrClient || new ECRClient(this.awsCreds);
     
     const repoName = this.getRepoName();
     try {
@@ -191,7 +212,8 @@ class ServerlessRunRemoteMigrations {
   async getFullImageUri() {
     if (!this.image) {
       const repoUri = await this.getRepoUri();
-      const { tag = 'latest' } = this.getConfig() || {};
+      const { build = {} } = this.getConfig() || {};
+      const { tag = 'latest' } = build;
       this.image = `${repoUri}:${tag}`;
     }
     return this.image;
@@ -263,9 +285,107 @@ class ServerlessRunRemoteMigrations {
         ParameterValue: deploy.memory || 512,
       }
     ];
+      // run task
+      const taskStack = await this.upsertCloudformationStack(normalize(join(__dirname, 'cloudformation.yml')), parameters, taskStackName);
 
-      await this.upsertCloudformationStack(normalize(join(__dirname, 'cloudformation.yml')), parameters, taskStackName);
+      // const ec2Client = new EC2Client(this.awsCreds);
+      const ecsClient = this.ecsClient || new ECSClient(this.awsCreds);
+
+      const awsConfig = typeof deploy.aws === 'boolean' ? {} : deploy.aws;
+      const { vpc = {} } = awsConfig;
+      let {
+        securityGroupId,
+        subnetId,
+      } = vpc;
+
+      if (!securityGroupId || !subnetId) {
+        const { Vpcs: vpcs } = await this.ec2Client.send(new DescribeVpcsCommand({}));
+        const defaultVpc = vpcs.find((vpc) => vpc.IsDefault);
+        if (!defaultVpc) {
+          throw new Error(`Default VPC not found!`);
+        }
+
+        const { Subnets: subnets = [] } = await this.ec2Client.send(new DescribeSubnetsCommand({
+          Filters: [{
+            Name: 'vpc-id',
+            Values: [defaultVpc.VpcId]
+          }]
+        }));
+
+        if (!subnets.length && !subnetId) {
+          throw new Error(`No subnets found for vpc: ${defaultVpc.VpcId}`)
+        }
+
+        const { SecurityGroups: secGroups = [] } = await this.ec2Client.send(new DescribeSecurityGroupsCommand({
+          Filters: [{
+            Name: 'vpc-id',
+            Values: [defaultVpc.VpcId]
+          }]
+        }));
+
+        if (!secGroups.length && !securityGroupId) {
+          throw new Error(`No security groups found for vpc ${defaultVpc.VpcId}`)
+        }
+
+        subnetId = subnetId || subnets[0].SubnetId;
+        securityGroupId = securityGroupId || secGroups[0].GroupId;
+      }
+
+      const taskArn = taskStack.Outputs.find((o) => o.OutputKey === 'TaskArn').OutputValue;
+      const clusterName = taskStack.Outputs.find((o) => o.OutputKey === 'ClusterName').OutputValue;
+      const runTaskCmd = new RunTaskCommand({
+        taskDefinition: taskArn,
+        networkConfiguration: {
+          awsvpcConfiguration: {
+            subnets: [subnetId],
+            securityGroups: [securityGroupId],
+          },
+        },
+        cluster: clusterName,
+      });
+      
+      const runTaskResp = await ecsClient.send(runTaskCmd);
+
+      this.waitForTask(runTaskResp.tasks[0].taskArn || '');
     }
+  }
+
+  /**
+   * 
+   * @param {string} taskArn 
+   */
+  async waitForTask(taskArn) {
+    const cmd = new DescribeTasksCommand({
+      tasks: [taskArn],
+    });
+
+    const { tasks = [] } = await this.ecsClient.send(cmd);
+
+    if (!tasks.length) {
+      throw new Error(`Task ${taskArn} not found`);
+    }
+
+    const task = tasks[0];
+    const { stopCode, lastStatus, startedAt, stoppedAt, stoppedReason, containers } = task;
+    if (startedAt) {
+      this.log(`db migrations task started at ${startedAt}`);
+    }
+    this.log(`db migrations task: ${lastStatus}`);
+    if (stopCode && stopCode !== 'EssentialContainerExited') {
+      throw new Error(`db migrations task entere state ${lastStatus}`);
+    }
+
+    const migrationContainer = containers[0];
+    if (typeof migrationContainer.exitCode === 'undefined') {
+      await new Promise((res) => setTimeout(res, 5000));
+      return this.waitForStack(taskArn);
+    }
+
+    if (migrationContainer.exitCode !== 0) {
+      throw new Error(`Db migrations task exited with error code: ${migrationContainer.exitCode}: ${stoppedReason}`);
+    }
+
+    return task;
   }
 }
 

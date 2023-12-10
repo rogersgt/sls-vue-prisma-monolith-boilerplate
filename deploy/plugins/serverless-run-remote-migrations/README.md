@@ -24,8 +24,8 @@ custom:
       memory: 512 # (Default: 512)
       # currently only aws is supported (although you can run images from Dockerhub or anywhere)
       aws: # Can also use 'aws: true' here to use default VPC and default VPC security group
+        stackName: any-stack-name-for-migrations-task # (Optional, a stack name will be generated like "${appName}-${stage}-migrations")
         vpc:
           securityGroupId: sg-xxxxx # (Optional) will use default VPC security group if none provided
           subnetId: subnet-xxxxx # (Optional) will use random subnet in default VPC if none provided
-          clusterName: xxxxx # (Optional) will use default cluster if non provided
 ```
