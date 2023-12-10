@@ -8,7 +8,7 @@
     "lint": "eslint src",
     "test": "npm run lint && npm run build",
     "start": "nodemon --inspect node_modules/serverless/bin/serverless.js offline start",
-    "deploy": "ENVIRONMENT=prod serverless deploy",
+    "deploy": "ENVIRONMENT=prod serverless deploy --force",
     "db:gen:client": "prisma generate client",
     "db:migrate:dev": "prisma migrate dev && npm run db:gen:client",
     "db:migrate:deploy": "prisma migrate deploy"

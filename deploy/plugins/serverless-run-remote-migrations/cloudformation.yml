@@ -68,6 +68,7 @@ Resources:
                   - 'ecr:GetAuthorizationToken'
                   - 'ecr:BatchCheckLayerAvailability'
                   - 'ecr:BatchGetImage'
+                  - 'ecr:GetDownloadUrlForLayer'
                 Resource: '*'
 
   FargateServiceLinkedRole:

@@ -7,12 +7,14 @@ const {
   DescribeRepositoriesCommand,
   CreateRepositoryCommand,
   GetAuthorizationTokenCommand,
+  DeleteRepositoryCommand,
 } = require('@aws-sdk/client-ecr');
 const {
   CloudFormationClient,
   DescribeStacksCommand,
   CreateStackCommand,
   UpdateStackCommand,
+  DeleteStackCommand,
 } = require('@aws-sdk/client-cloudformation');
 const { ECSClient, RunTaskCommand, DescribeTasksCommand } = require('@aws-sdk/client-ecs');
 const { readFileSync } = require('fs');
@@ -30,7 +32,7 @@ class ServerlessRunRemoteMigrations {
   constructor(serverless, _cliOptions, { log, writeText }) {
     this.serverless = serverless;
     this.name = 'serverless-run-remote-migrations';
-    this.log = log;
+    this.log = (text) => log(`${typeof text === 'string' ? log(text) : log(JSON.stringify(text, undefined, 2))}`);
     this.writeText = writeText;
     const { region = 'us-east-1', docker = {}, deploy = {} } = this.getConfig();
     this.region = region;
@@ -49,6 +51,7 @@ class ServerlessRunRemoteMigrations {
     this.hooks = {
       // 'package:finalize': this.buildImage.bind(this),
       'before:deploy:deploy': this.runRemoteMigrations.bind(this),
+      'remove:remove': this.remove.bind(this)
     };
   }
 
@@ -66,6 +69,19 @@ class ServerlessRunRemoteMigrations {
     const cmd = new GetAuthorizationTokenCommand();
     const resp = await client.send(cmd);
     return resp;
+  }
+
+  async remove() {
+    const { deploy = {} } = this.getConfig();
+    if (deploy.aws) {
+      const stackName = this.getTaskStackName();
+      await this.cloudformationClient.send(new DeleteStackCommand({
+        StackName: stackName,
+      }));
+     await this.ecrClient.send(new DeleteRepositoryCommand({
+      repositoryName: this.getRepoName(),
+     }));
+    }
   }
 
   async upsertCloudformationStack(templatePath, parameters, stackName) {
@@ -159,7 +175,7 @@ class ServerlessRunRemoteMigrations {
 
   async pushImage(username, password) {
     const image = await this.getFullImageUri();
-    this.log.verbose(`pushing docker image ${image}`);
+    this.log(`pushing docker image ${image}`);
     const builtImage = await this.docker.getImage(image);
     
     const stream = await builtImage.push({
@@ -224,7 +240,7 @@ class ServerlessRunRemoteMigrations {
     const { build = {} } = this.getConfig();
     const { dockerfile, context = '.' } = build;
     if (!dockerfile) throw new Error(`Provide a build.dockerfile to excute for build docker image`);
-    this.log.verbose(`building using ${dockerfile}`);
+    this.log(`building using ${dockerfile}`);
     await this.writeText('building db migrations image');
     const image = await this.getFullImageUri();
     const dockerBuild = `docker build -t ${image} -f ${dockerfile} ${context}`;
@@ -343,10 +359,10 @@ class ServerlessRunRemoteMigrations {
         },
         cluster: clusterName,
       });
-      
+
       const runTaskResp = await ecsClient.send(runTaskCmd);
 
-      this.waitForTask(runTaskResp.tasks[0].taskArn || '');
+      this.waitForTask(runTaskResp.tasks[0].taskArn || '', clusterName);
     }
   }
 
@@ -354,9 +370,10 @@ class ServerlessRunRemoteMigrations {
    * 
    * @param {string} taskArn 
    */
-  async waitForTask(taskArn) {
+  async waitForTask(taskArn, cluster) {
     const cmd = new DescribeTasksCommand({
       tasks: [taskArn],
+      cluster,
     });
 
     const { tasks = [] } = await this.ecsClient.send(cmd);
@@ -371,18 +388,15 @@ class ServerlessRunRemoteMigrations {
       this.log(`db migrations task started at ${startedAt}`);
     }
     this.log(`db migrations task: ${lastStatus}`);
-    if (stopCode && stopCode !== 'EssentialContainerExited') {
-      throw new Error(`db migrations task entere state ${lastStatus}`);
-    }
 
     const migrationContainer = containers[0];
     if (typeof migrationContainer.exitCode === 'undefined') {
       await new Promise((res) => setTimeout(res, 5000));
-      return this.waitForStack(taskArn);
+      return this.waitForTask(taskArn, cluster);
     }
 
     if (migrationContainer.exitCode !== 0) {
-      throw new Error(`Db migrations task exited with error code: ${migrationContainer.exitCode}: ${stoppedReason}`);
+      throw new Error(`Db migrations task exited at ${stoppedAt} with error code: ${migrationContainer.exitCode}: ${stoppedReason}`);
     }
 
     return task;
