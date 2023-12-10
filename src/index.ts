@@ -2,8 +2,9 @@ import serverless from 'serverless-http';
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 import cookies from 'cookie-parser';
-import router from './api';
-import renderDashboard from './ui/dashboard';
+import router from './router';
+import renderDashboard from './views/dashboard';
+import { renderFavicon } from './views/tools/renderImage';
 
 const app = express();
 
@@ -15,7 +16,8 @@ app.use(cors({
 }));
 app.use(cookies());
 
-app.get('/', (_req, res) => res.redirect('/dashboard'))
+app.get('/', (_req, res) => res.redirect('/dashboard'));
+app.get('/favicon.ico', renderFavicon);
 app.use('/dashboard', renderDashboard);
 app.use('/api', router);
 

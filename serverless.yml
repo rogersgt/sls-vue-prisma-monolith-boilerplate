@@ -32,7 +32,7 @@ provider:
 
 plugins:
   - ./deploy/plugins/serverless-run-remote-migrations/index.js
-  - serverless-plugin-typescript
+  - serverless-webpack
   - serverless-domain-manager
   - serverless-offline
 
