@@ -12,5 +12,9 @@ This is a boilerplate with Vue SSR, serverless, typescript, and prisma with Post
 * `npm start`
 
 ## deploy
+### Prerequisites
+* Create AWS Certificate that covers `*.${HOSTED_ZONE_NAME}` (defined in your `.env`)
+
+### Deploy Steps
 * `npm i`
 * `npm run deploy`

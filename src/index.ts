@@ -15,7 +15,7 @@ app.use(cors({
 }));
 app.use(cookies());
 
-app.get('/', (_req, res) => res.redirect('/home'))
+app.get('/', (_req, res) => res.redirect('/dashboard'))
 app.use('/dashboard', renderDashboard);
 app.use('/api', router);
 

@@ -138,7 +138,7 @@ class ServerlessRunRemoteMigrations {
 
   async pushImage(username, password) {
     const image = await this.getFullImageUri();
-    this.log(`pushing docker image ${image}`);
+    this.log.verbose(`pushing docker image ${image}`);
     const builtImage = await this.docker.getImage(image);
     
     const stream = await builtImage.push({
@@ -198,11 +198,11 @@ class ServerlessRunRemoteMigrations {
   }
 
   async buildImage() {
+    this.log('Building sls migrations docker image');
     const { build = {} } = this.getConfig();
     const { dockerfile, context = '.' } = build;
     if (!dockerfile) throw new Error(`Provide a build.dockerfile to excute for build docker image`);
-    // const fullDockerfilePath = path.join(process.cwd(), dockerfile);
-    this.log(`building using ${dockerfile}`);
+    this.log.verbose(`building using ${dockerfile}`);
     await this.writeText('building db migrations image');
     const image = await this.getFullImageUri();
     const dockerBuild = `docker build -t ${image} -f ${dockerfile} ${context}`;
