@@ -106,12 +106,14 @@ class ServerlessRunRemoteMigrations {
       await this.cloudformationClient.send(new DeleteStackCommand({
         StackName: stackName,
       }));
+      const repositoryName = this.getRepoName();
       const imageIds = await this.getAllImageIdsFromRepo();
       await this.ecrClient.send(new BatchDeleteImageCommand({
         imageIds,
+        repositoryName,
       }));
      await this.ecrClient.send(new DeleteRepositoryCommand({
-      repositoryName: this.getRepoName(),
+      repositoryName,
      }));
     }
   }
