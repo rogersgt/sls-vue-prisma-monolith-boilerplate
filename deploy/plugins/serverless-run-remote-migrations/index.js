@@ -32,7 +32,7 @@ class ServerlessRunRemoteMigrations {
   constructor(serverless, _cliOptions, { log, writeText }) {
     this.serverless = serverless;
     this.name = 'serverless-run-remote-migrations';
-    this.log = (text) => log(`${typeof text === 'string' ? log(text) : log(JSON.stringify(text, undefined, 2))}`);
+    this.log = log;
     this.writeText = writeText;
     const { region = 'us-east-1', docker = {}, deploy = {} } = this.getConfig();
     this.region = region;
@@ -42,16 +42,23 @@ class ServerlessRunRemoteMigrations {
       region,
     };
 
+    this.lastTaskStatus = '';
+
     if (deploy.aws) {
       this.ecsClient = new ECSClient(this.awsCreds);
       this.cloudformationClient = new CloudFormationClient(this.awsCreds);
       this.ecrClient = new ECRClient(this.awsCreds);
       this.ec2Client = new EC2Client(this.awsCreds);
     }
+    this.commands = {
+      runRemoteMigrations: {
+        lifecycleEvents: ['run']
+      },
+    };
     this.hooks = {
-      // 'package:finalize': this.buildImage.bind(this),
-      'before:deploy:deploy': this.runRemoteMigrations.bind(this),
-      'remove:remove': this.remove.bind(this)
+      'package:finalize': this.buildImage.bind(this),
+      'remove:remove': this.remove.bind(this),
+      'runRemoteMigrations:run': this.runRemoteMigrations.bind(this),
     };
   }
 
@@ -312,6 +319,7 @@ class ServerlessRunRemoteMigrations {
       let {
         securityGroupId,
         subnetId,
+        autoAssignPublicIp = 'ENABLED',
       } = vpc;
 
       if (!securityGroupId || !subnetId) {
@@ -347,12 +355,15 @@ class ServerlessRunRemoteMigrations {
         securityGroupId = securityGroupId || secGroups[0].GroupId;
       }
 
+      this.log(`Using subnetId=${subnetId} and securityGroupId=${securityGroupId}`);
+
       const taskArn = taskStack.Outputs.find((o) => o.OutputKey === 'TaskArn').OutputValue;
       const clusterName = taskStack.Outputs.find((o) => o.OutputKey === 'ClusterName').OutputValue;
       const runTaskCmd = new RunTaskCommand({
         taskDefinition: taskArn,
         networkConfiguration: {
           awsvpcConfiguration: {
+            assignPublicIp: autoAssignPublicIp,
             subnets: [subnetId],
             securityGroups: [securityGroupId],
           },
@@ -384,10 +395,18 @@ class ServerlessRunRemoteMigrations {
 
     const task = tasks[0];
     const { stopCode, lastStatus, startedAt, stoppedAt, stoppedReason, containers } = task;
+    if (stopCode === 'TaskFailedToStart' || stopCode === 'UserInitiated' || stopCode === 'TerminationNotice' || stopCode === 'SpotInterruption' || stopCode === 'ServiceSchedulerInitiated') {
+      throw new Error(`db migrations task status stopCode: ${stopCode}`);
+    }
+
     if (startedAt) {
       this.log(`db migrations task started at ${startedAt}`);
     }
-    this.log(`db migrations task: ${lastStatus}`);
+
+    if (this.lastTaskStatus !== lastStatus) {
+      this.lastTaskStatus = lastStatus;
+      this.log(`db migrations task: ${lastStatus}`);
+    }
 
     const migrationContainer = containers[0];
     if (typeof migrationContainer.exitCode === 'undefined') {
@@ -395,8 +414,10 @@ class ServerlessRunRemoteMigrations {
       return this.waitForTask(taskArn, cluster);
     }
 
+    this.lastTaskStatus = '';
+
     if (migrationContainer.exitCode !== 0) {
-      throw new Error(`Db migrations task exited at ${stoppedAt} with error code: ${migrationContainer.exitCode}: ${stoppedReason}`);
+      throw new Error(`Db migrations task exited at ${stoppedAt} with error code: ${migrationContainer.exitCode}: ${stoppedReason}: ${stopCode}`);
     }
 
     return task;

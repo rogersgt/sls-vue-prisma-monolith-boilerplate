@@ -70,6 +70,8 @@ custom:
       context: .
       tag: ${env:COMMIT_SHA, 'latest'}
     deploy:
+      cpu: 512
+      memory: 1024
       aws:
         stackName: ${self:service}-${self:provider.stage}-db-migrations
 

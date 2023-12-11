@@ -28,4 +28,11 @@ custom:
         vpc:
           securityGroupId: sg-xxxxx # (Optional) will use default VPC security group if none provided
           subnetId: subnet-xxxxx # (Optional) will use random subnet in default VPC if none provided
+          autoAssignPublicIp: ENABLED # ENABLED | DISABLED (Optional) will default to true if not provided. Use false if subnetId is private
+```
+
+## Usage
+Run migrations in a remote task against deployed database
+```bash
+serverless runRemoteMigrations
 ```
