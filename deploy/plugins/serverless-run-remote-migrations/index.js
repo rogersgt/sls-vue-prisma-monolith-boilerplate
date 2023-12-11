@@ -8,6 +8,8 @@ const {
   CreateRepositoryCommand,
   GetAuthorizationTokenCommand,
   DeleteRepositoryCommand,
+  ListImagesCommand,
+  BatchDeleteImageCommand,
 } = require('@aws-sdk/client-ecr');
 const {
   CloudFormationClient,
@@ -78,12 +80,35 @@ class ServerlessRunRemoteMigrations {
     return resp;
   }
 
+  /**
+   * 
+   * @param {import('@aws-sdk/client-ecr').ImageIdentifier[]} imageIds 
+   * @param {string | undefined} nextToken 
+   */
+  async getAllImageIdsFromRepo(imageIds = [], nextToken) {
+
+    const repoName = this.getRepoName();
+    const { imageIds: nextImageIds, nextToken: newNextToken } = await this.ecrClient.send(new ListImagesCommand({
+      repositoryName: repoName,
+    }));
+
+    const allImageIds = imageIds.concat(nextImageIds);
+    if (newNextToken) {
+      await new Promise((res) => setTimeout(res, 1000));
+      return this.getAllImageIdsFromRepo(allImageIds, newNextToken);
+    }
+    return allImageIds;
+  }
   async remove() {
     const { deploy = {} } = this.getConfig();
     if (deploy.aws) {
       const stackName = this.getTaskStackName();
       await this.cloudformationClient.send(new DeleteStackCommand({
         StackName: stackName,
+      }));
+      const imageIds = await this.getAllImageIdsFromRepo();
+      await this.ecrClient.send(new BatchDeleteImageCommand({
+        imageIds,
       }));
      await this.ecrClient.send(new DeleteRepositoryCommand({
       repositoryName: this.getRepoName(),
@@ -241,8 +266,8 @@ class ServerlessRunRemoteMigrations {
     if (!this.image) {
       const repoUri = await this.getRepoUri();
       const { build = {} } = this.getConfig() || {};
-      const { tag = 'latest' } = build;
-      this.image = `${repoUri}:${tag}`;
+      // const { tag = 'latest' } = build;
+      this.image = `${repoUri}:latest`;
     }
     return this.image;
   }

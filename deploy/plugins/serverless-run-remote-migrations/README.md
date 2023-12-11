@@ -18,7 +18,6 @@ custom:
       context: . # (Default: ".") See https://docs.docker.com/build/building/context
       # Recommended to tag code with current commit SHA (i.e. export COMMIT_SHA=$(git rev-parse HEAD) and use ${env:COMMIT_SHA}).
       # See https://docs.docker.com/engine/reference/commandline/tag/
-      tag: latest # (Default: "latest") 
     deploy:
       cpu: 256 # (Default: 256)
       memory: 512 # (Default: 512)
