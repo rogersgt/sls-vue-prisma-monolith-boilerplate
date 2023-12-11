@@ -46,7 +46,7 @@ custom:
     domainName: ${env:APP_DOMAIN}
     stage: $default
     basePath: ''
-    certificateName: '*.${HOSTED_ZONE_NAME}'
+    certificateName: '*.${env:HOSTED_ZONE_NAME}'
     createRoute53Record: true
     endpointType: REGIONAL
     securityPolicy: tls_1_2
