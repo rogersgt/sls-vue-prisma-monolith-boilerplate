@@ -43,6 +43,7 @@ class ServerlessRunRemoteMigrations {
     };
 
     this.lastTaskStatus = '';
+    this.lastStackStatus = '';
 
     if (deploy.aws) {
       this.ecsClient = new ECSClient(this.awsCreds);
@@ -133,12 +134,17 @@ class ServerlessRunRemoteMigrations {
       if (StackStatus.includes('FAILED') || StackStatus.includes('ROLLBACK')) {
         throw new Error(`stack ${stackName} entered state ${StackStatus}`);
       }
+
       if (StackStatus.includes('IN_PROGRESS')) {
-        this.writeText(`${stackName}: ${StackStatus}`);
+        if (StackStatus !== this.lastStackStatus) {
+          this.writeText(`${stackName}: ${StackStatus}`);
+        }
+        this.lastTaskStatus = StackStatus;
         await new Promise((res) => setTimeout(res, 5000));
         return this.waitForStack(stackName);
       }
 
+      this.lastStackStatus = '';
       return stack;
     } else {
       throw new Error(`${stackName} not found`);
