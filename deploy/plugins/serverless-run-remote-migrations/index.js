@@ -316,7 +316,11 @@ class ServerlessRunRemoteMigrations {
         {
           ParameterKey: 'Command',
           ParameterValue: deploy.command,
-        }
+        },
+        {
+          ParameterKey: 'SecretMode',
+          ParameterValue: deploy.aws.secret.valueFrom.startsWith('arn:aws:secretsmanager') ? 'secretsmanager' : 'ssm',
+        },
       ];
 
       if (deploy.aws.secret && deploy.aws.secret.valueFrom) {

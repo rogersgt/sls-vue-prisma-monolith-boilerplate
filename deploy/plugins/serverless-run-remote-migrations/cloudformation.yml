@@ -29,9 +29,18 @@ Parameters:
     Type: String
     Default: ''
 
+  SecretMode:
+    Type: String
+    AllowedValues:
+      - ssm
+      - secretsmanager
+    Default: ssm
+
 Conditions:
   UseTaskRoleArn: !Not [!Equals [!Ref 'TaskRoleArn', '']]
   MountSecret: !Not [!Equals [!Ref 'SecretArn', '']]
+  UseSsmSecret: !Equals [!Ref 'SecretMode', 'ssm']
+  UseSecretsManager: !Equals [!Ref 'SecretMode', secretsmanager]
 
 Resources:
   Task:
@@ -87,11 +96,23 @@ Resources:
         - PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: Allow
-                Action:
-                  - ssm:GetParameter*
-                  - secretsmanager:*GetSecretValue
-                Resource: '*'
+              - !If
+                - UseSsmSecret
+                - - Effect: Allow
+                    Action:
+                      - ssm:GetParameters
+                      - ssm:GetParameter
+                    Resource: 
+                      - !Ref 'SecretArn'
+                - !Ref 'AWS::NoValue'
+              - !If
+                - UseSecretsManager
+                - - Effect: Allow
+                    Action:
+                      - secretsmanager:GetSecretValue
+                    Resource:
+                      - !Ref 'SecretArn'
+                - !Ref 'AWS::NoValue'
               - Effect: Allow
                 Action:
                   - kms:Decrypt
