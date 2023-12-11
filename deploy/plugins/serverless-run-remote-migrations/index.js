@@ -299,6 +299,7 @@ class ServerlessRunRemoteMigrations {
       await this.pushImage(username, password);
 
       const taskStackName = this.getTaskStackName();
+      console.log(deploy);
       const parameters = [{
           ParameterKey: 'RepoName',
           ParameterValue: this.getRepoName(),
@@ -317,10 +318,10 @@ class ServerlessRunRemoteMigrations {
           ParameterValue: deploy.command,
         }
       ];
-      if (deploy.secret && deploy.secret.fromValue) {
+      if (deploy.secret && deploy.secret.valueFrom) {
         parameters.push({
           ParameterKey: 'SecretArn',
-          ParameterValue: deploy.secret.fromValue,
+          ParameterValue: deploy.secret.valueFrom,
         });
         parameters.push({
           ParameterKey: 'SecretName',
