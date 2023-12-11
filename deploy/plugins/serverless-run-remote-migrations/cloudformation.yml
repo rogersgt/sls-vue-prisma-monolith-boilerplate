@@ -76,7 +76,7 @@ Resources:
           Secrets: !If
             - MountSecret
             - Name: !Ref 'SecretName'
-              ValueFrom: !Ref 'SecretArn' 
+              ValueFrom: !Ref 'SecretArn'
             - !Ref 'AWS::NoValue'
           Command: !Ref 'Command'
       TaskRoleArn: !GetAtt TaskRole.Arn
