@@ -29,11 +29,10 @@ class ServerlessRunRemoteMigrations {
    * @param {object} cliOptions serverless CLI options
    * @param {object} serverlessUtils serverless utility tools like log
    */
-  constructor(serverless, _cliOptions, { log, writeText }) {
+  constructor(serverless, _cliOptions, { log }) {
     this.serverless = serverless;
     this.name = 'serverless-run-remote-migrations';
     this.log = log;
-    this.writeText = writeText;
     const { region = 'us-east-1', docker = {}, deploy = {} } = this.getConfig();
     this.region = region;
     this.docker = new Dockerode({ ...docker });
@@ -137,7 +136,7 @@ class ServerlessRunRemoteMigrations {
 
       if (StackStatus.includes('IN_PROGRESS')) {
         if (StackStatus !== this.lastStackStatus) {
-          this.writeText(`${stackName}: ${StackStatus}`);
+          this.log(`${stackName}: ${StackStatus}`);
         }
         this.lastTaskStatus = StackStatus;
         await new Promise((res) => setTimeout(res, 5000));
@@ -173,7 +172,7 @@ class ServerlessRunRemoteMigrations {
     
     return new Promise((res, rej) => {
       buff.on('message', (msg) => {
-        this.writeText(msg);
+        this.log(msg);
       });
       buff.on('close', (code) => {
         if (code !== 0) {
@@ -254,13 +253,13 @@ class ServerlessRunRemoteMigrations {
     const { dockerfile, context = '.' } = build;
     if (!dockerfile) throw new Error(`Provide a build.dockerfile to excute for build docker image`);
     this.log(`building using ${dockerfile}`);
-    await this.writeText('building db migrations image');
+    await this.log('building db migrations image');
     const image = await this.getFullImageUri();
     const dockerBuild = `docker build -t ${image} -f ${dockerfile} ${context}`;
     const buff = childProcess.exec(dockerBuild);
     await new Promise((res, rej) => {
       buff.on('message', (message) => {
-        this.writeText(message.toString());
+        this.log(message.toString());
       });
       buff.on('close', (code) => {
         if (code !== 0) {
@@ -290,7 +289,7 @@ class ServerlessRunRemoteMigrations {
     const { deploy = {} } = this.getConfig();
 
     await this.buildImage();
-    await this.writeText('running database migrations');
+    await this.log('running database migrations');
 
     if (deploy.aws) {
       await this.upsertECRRepo();
