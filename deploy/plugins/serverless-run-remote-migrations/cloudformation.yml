@@ -69,6 +69,7 @@ Resources:
             Options:
               'awslogs-region': !Ref 'AWS::Region'
               'awslogs-group': !Ref LogGroup
+              'awslogs-stream-prefix': migrations
           Secrets: !If
             - MountSecret
             - Name: !Ref 'SecretName'

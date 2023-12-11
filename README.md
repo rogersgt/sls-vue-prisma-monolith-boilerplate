@@ -14,6 +14,8 @@ This is a boilerplate with Vue SSR, serverless, typescript, and prisma with Post
 ## deploy
 ### Prerequisites
 * Create AWS Certificate that covers `*.${HOSTED_ZONE_NAME}` (defined in your `.env`)
+* Create a `DATBASE_URL` secret SSM Parameter under `/app/prod/${APP_NAME}/DATABASE_URL`
+* Ensure the app user has correct permissions in hosed database instance
 
 ### Deploy Steps
 * `npm i`
