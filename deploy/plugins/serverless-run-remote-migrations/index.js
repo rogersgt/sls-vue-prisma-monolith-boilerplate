@@ -313,6 +313,10 @@ class ServerlessRunRemoteMigrations {
           ParameterKey: 'Memory',
           ParameterValue: deploy.memory || 512,
         },
+        {
+          ParameterKey: 'Command',
+          ParameterValue: deploy.command,
+        }
       ];
       if (deploy.secret && deploy.secret.fromValue) {
         parameters.push({

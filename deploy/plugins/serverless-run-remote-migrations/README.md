@@ -22,6 +22,9 @@ custom:
     deploy:
       cpu: 256 # (Default: 256)
       memory: 512 # (Default: 512)
+      command: # (Required)
+        - some
+        - command
       # currently only aws is supported (although you can run images from Dockerhub or anywhere)
       aws: # Can also use 'aws: true' here to use default VPC and default VPC security group
         stackName: any-stack-name-for-migrations-task # (Optional, a stack name will be generated like "${appName}-${stage}-migrations")
