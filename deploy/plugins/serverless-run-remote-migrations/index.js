@@ -266,8 +266,8 @@ class ServerlessRunRemoteMigrations {
     if (!this.image) {
       const repoUri = await this.getRepoUri();
       const { build = {} } = this.getConfig() || {};
-      // const { tag = 'latest' } = build;
-      this.image = `${repoUri}:latest`;
+      const { tag = 'latest' } = build;
+      this.image = `${repoUri}:${tag}`;
     }
     return this.image;
   }

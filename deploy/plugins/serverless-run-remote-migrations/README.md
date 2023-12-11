@@ -15,12 +15,13 @@ custom:
     # docker image build that contains database migrations code
     build:
       dockerfile: path/to/Dockerfile # (Required)
-      context: . # (Default: ".") See https://docs.docker.com/build/building/context
+      context: . # (Optional, Default: ".") See https://docs.docker.com/build/building/context
       # Recommended to tag code with current commit SHA (i.e. export COMMIT_SHA=$(git rev-parse HEAD) and use ${env:COMMIT_SHA}).
       # See https://docs.docker.com/engine/reference/commandline/tag/
+      tag: latest # (Optional, Default "latest")
     deploy:
-      cpu: 256 # (Default: 256)
-      memory: 512 # (Default: 512)
+      cpu: 256 # (Optional, Default: 256)
+      memory: 512 # (Optional, Default: 512)
       command: # (Required)
         - some
         - command
@@ -30,7 +31,7 @@ custom:
         vpc:
           securityGroupId: sg-xxxxx # (Optional) will use default VPC security group if none provided
           subnetId: subnet-xxxxx # (Optional) will use random subnet in default VPC if none provided
-          autoAssignPublicIp: ENABLED # ENABLED | DISABLED (Optional) will default to true if not provided. Use false if subnetId is private
+          autoAssignPublicIp: ENABLED # ENABLED | DISABLED (Optional, Default "ENABLED") Use false if subnetId is private
         secret: # (Options) will be omitted if not specified
           name: DATABASE_URL # (Optional) Will default to DATABASE_URL
           valueFrom: arn:aws:ssm:<region>:<account-id>:parameter/path/to/SECRET # (Required) Either SSM Parameter /arn or AWS Secret Arn to securely mount value into migrations task
