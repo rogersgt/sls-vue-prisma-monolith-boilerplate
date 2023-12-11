@@ -75,8 +75,8 @@ Resources:
               'awslogs-stream-prefix': migrations
           Secrets: !If
             - MountSecret
-            - Name: !Ref 'SecretName'
-              ValueFrom: !Ref 'SecretArn'
+            - - Name: !Ref 'SecretName'
+                ValueFrom: !Ref 'SecretArn'
             - !Ref 'AWS::NoValue'
           Command: !Ref 'Command'
       TaskRoleArn: !GetAtt TaskRole.Arn

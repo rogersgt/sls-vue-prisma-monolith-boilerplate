@@ -70,8 +70,8 @@ custom:
       context: .
       tag: ${env:COMMIT_SHA, 'latest'}
     deploy:
-      cpu: 512
-      memory: 1024
+      # cpu: 512
+      # memory: 1024
       command:
         - npm
         - run
