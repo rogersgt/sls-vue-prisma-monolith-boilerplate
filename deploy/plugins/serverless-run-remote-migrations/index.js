@@ -375,8 +375,6 @@ class ServerlessRunRemoteMigrations {
         securityGroupId = securityGroupId || secGroups[0].GroupId;
       }
 
-      this.log(`Using subnetId=${subnetId} and securityGroupId=${securityGroupId}`);
-
       const taskArn = taskStack.Outputs.find((o) => o.OutputKey === 'TaskArn').OutputValue;
       const clusterName = taskStack.Outputs.find((o) => o.OutputKey === 'ClusterName').OutputValue;
       const runTaskCmd = new RunTaskCommand({
