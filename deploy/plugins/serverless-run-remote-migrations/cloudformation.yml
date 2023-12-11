@@ -39,8 +39,12 @@ Parameters:
 Conditions:
   UseTaskRoleArn: !Not [!Equals [!Ref 'TaskRoleArn', '']]
   MountSecret: !Not [!Equals [!Ref 'SecretArn', '']]
-  UseSsmSecret: !Equals [!Ref 'SecretMode', 'ssm']
-  UseSecretsManager: !Equals [!Ref 'SecretMode', secretsmanager]
+  UseSsmSecret: !And
+    - !Condition MountSecret
+    - !Equals [!Ref 'SecretMode', 'ssm']
+  UseSecretsManager: !And
+    - !Condition MountSecret
+    - !Equals [!Ref 'SecretMode', 'secretsmanager']
 
 Resources:
   Task:
@@ -93,31 +97,30 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
       Policies:
-        - PolicyDocument:
+        - PolicyName: GetSecret
+          PolicyDocument:
             Version: '2012-10-17'
-            Statement:
-              - !If
-                - UseSsmSecret
-                - - Effect: Allow
-                    Action:
-                      - ssm:GetParameters
-                      - ssm:GetParameter
-                    Resource: 
-                      - !Ref 'SecretArn'
-                - !Ref 'AWS::NoValue'
-              - !If
-                - UseSecretsManager
-                - - Effect: Allow
-                    Action:
-                      - secretsmanager:GetSecretValue
-                    Resource:
-                      - !Ref 'SecretArn'
-                - !Ref 'AWS::NoValue'
-              - Effect: Allow
-                Action:
-                  - kms:Decrypt
-                Resource: '*'
-          PolicyName: GetSecret
+            Statement: !If
+              - UseSsmSecret
+              # ssm mode
+              - - Effect: Allow
+                  Action:
+                    - ssm:GetParameters
+                    - ssm:GetParameter
+                  Resource:  !Ref 'SecretArn'
+                - Effect: Allow
+                  Action:
+                    - kms:Decrypt
+                  Resource: '*'
+              # secretsmanager mode
+              - - Effect: Allow
+                  Action:
+                    - secretsmanager:GetSecretValue
+                  Resource: !Ref 'SecretArn'
+                - Effect: Allow
+                  Action:
+                    - kms:Decrypt
+                  Resource: '*'
 
   FargateServiceLinkedRole:
     Type: 'AWS::IAM::Role'
