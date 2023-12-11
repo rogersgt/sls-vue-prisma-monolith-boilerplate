@@ -82,6 +82,8 @@ custom:
         secret:
           name: DATABASE_URL
           valueFrom: arn:aws:ssm:${self:provider.region}:${aws:accountId}:parameter/app/${self:provider.stage}/${self:service}/DATABASE_URL
+  webpack:
+    includeModules: true
 
 functions:
   api:
