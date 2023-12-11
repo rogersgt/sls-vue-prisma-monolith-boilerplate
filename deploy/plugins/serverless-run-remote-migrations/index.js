@@ -318,6 +318,7 @@ class ServerlessRunRemoteMigrations {
           ParameterValue: deploy.command,
         }
       ];
+
       if (deploy.aws.secret && deploy.aws.secret.valueFrom) {
         parameters.push({
           ParameterKey: 'SecretArn',
@@ -327,6 +328,13 @@ class ServerlessRunRemoteMigrations {
           ParameterKey: 'SecretName',
           ParameterValue: deploy.aws.secret.name || 'DATABASE_URL',
         })
+      }
+
+      if (deploy.aws.taskRoleArn) {
+        parameters.push({
+          ParameterKey: 'TaskRoleArn',
+          ParameterValue: deploy.aws.taskRoleArn,
+        });
       }
       // run task
       const taskStack = await this.upsertCloudformationStack(normalize(join(__dirname, 'cloudformation.yml')), parameters, taskStackName);

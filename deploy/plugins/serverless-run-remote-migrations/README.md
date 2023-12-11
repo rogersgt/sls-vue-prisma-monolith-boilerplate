@@ -35,6 +35,7 @@ custom:
         secret: # (Options) will be omitted if not specified
           name: DATABASE_URL # (Optional) Will default to DATABASE_URL
           valueFrom: arn:aws:ssm:<region>:<account-id>:parameter/path/to/SECRET # (Required) Either SSM Parameter /arn or AWS Secret Arn to securely mount value into migrations task
+        taskRoleArn: arn:aws:iam::<account-id>:role/<task-role-name> # (Optional) Use an IAM role to grant migrations process IAM privileges
 ```
 
 ## Usage

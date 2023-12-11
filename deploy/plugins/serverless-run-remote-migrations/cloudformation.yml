@@ -25,36 +25,15 @@ Parameters:
   Command:
     Type: CommaDelimitedList
 
+  TaskRoleArn:
+    Type: String
+    Default: ''
+
 Conditions:
+  UseTaskRoleArn: !Not [!Equals [!Ref 'TaskRoleArn', '']]
   MountSecret: !Not [!Equals [!Ref 'SecretArn', '']]
 
 Resources:
-  TaskRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - sts:AssumeRole
-            Principal:
-              Service:
-                ecs-tasks.amazonaws.com
-      Policies:
-        - PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ssm:GetParameter*
-                  - secretsmanager:GetSecretValue
-                Resource: '*'
-              - Effect: Allow
-                Action:
-                  - kms:Decrypt
-                Resource: '*'
-          PolicyName: GetSecret
   Task:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -79,7 +58,10 @@ Resources:
                 ValueFrom: !Ref 'SecretArn'
             - !Ref 'AWS::NoValue'
           Command: !Ref 'Command'
-      TaskRoleArn: !GetAtt TaskRole.Arn
+      TaskRoleArn: !If
+      - UseTaskRoleArn
+      - !Ref 'TaskRoleArn'
+      - !Ref 'AWS::NoValue'
 
   LogGroup:
     Type: AWS::Logs::LogGroup
@@ -101,6 +83,20 @@ Resources:
       Description: 'Execution role for Amazon ECS Fargate tasks'
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Policies:
+        - PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter*
+                  - secretsmanager:*GetSecretValue
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource: '*'
+          PolicyName: GetSecret
 
   FargateServiceLinkedRole:
     Type: 'AWS::IAM::Role'
