@@ -295,19 +295,29 @@ class ServerlessRunRemoteMigrations {
 
       const taskStackName = this.getTaskStackName();
       const parameters = [{
-        ParameterKey: 'RepoName',
-        ParameterValue: this.getRepoName(),
-      }, {
-        ParameterKey: 'Image',
-        ParameterValue: await this.getFullImageUri(),
-      }, {
-        ParameterKey: 'Cpu',
-        ParameterValue: deploy.cpu || 256,
-      }, {
-        ParameterKey: 'Memory',
-        ParameterValue: deploy.memory || 512,
+          ParameterKey: 'RepoName',
+          ParameterValue: this.getRepoName(),
+        }, {
+          ParameterKey: 'Image',
+          ParameterValue: await this.getFullImageUri(),
+        }, {
+          ParameterKey: 'Cpu',
+          ParameterValue: deploy.cpu || 256,
+        }, {
+          ParameterKey: 'Memory',
+          ParameterValue: deploy.memory || 512,
+        },
+      ];
+      if (deploy.secret && deploy.secret.fromValue) {
+        parameters.push({
+          ParameterKey: 'SecretArn',
+          ParameterValue: deploy.secret.fromValue,
+        });
+        parameters.push({
+          ParameterKey: 'SecretName',
+          ParameterValue: deploy.secret.name || 'DATABASE_URL',
+        })
       }
-    ];
       // run task
       const taskStack = await this.upsertCloudformationStack(normalize(join(__dirname, 'cloudformation.yml')), parameters, taskStackName);
 
@@ -368,6 +378,7 @@ class ServerlessRunRemoteMigrations {
             securityGroups: [securityGroupId],
           },
         },
+        launchType: 'FARGATE',
         cluster: clusterName,
       });
 

@@ -14,14 +14,44 @@ Parameters:
   Memory:
     Type: Number
 
-  TaskRoleArn:
+  SecretArn:
     Type: String
     Default: ''
 
+  SecretName:
+    Type: String
+    Default: DATABASE_URL
+
 Conditions:
-  UseTaskRole: !Not [!Equals [!Ref 'TaskRoleArn', '']]
+  MountSecret: !Not [!Equals [!Ref 'SecretArn', '']]
 
 Resources:
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service:
+                ecs-tasks.amazonaws.com
+      Policies:
+        - PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - secretsmanager:GetSecretValue
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource: '*'
+          PolicyName: GetSecret
   Task:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -34,10 +64,22 @@ Resources:
       ContainerDefinitions:
         - Name: !Sub '${RepoName}-migrations'
           Image: !Ref 'Image'
-      TaskRoleArn: !If
-      - UseTaskRole
-      - !Ref 'TaskRoleArn'
-      - !Ref 'AWS::NoValue'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              'awslogs-region': !Ref 'AWS::Region'
+              'awslogs-group': !Ref LogGroup
+          Secrets: !If
+            - MountSecret
+            - Name: !Ref 'SecretName'
+              ValueFrom: !Ref 'SecretArn' 
+            - !Ref 'AWS::NoValue'
+      TaskRoleArn: !GetAtt TaskRole.Arn
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 90
 
   FargateTaskExecutionRole:
     Type: 'AWS::IAM::Role'

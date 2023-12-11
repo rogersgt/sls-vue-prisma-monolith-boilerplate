@@ -74,6 +74,9 @@ custom:
       memory: 1024
       aws:
         stackName: ${self:service}-${self:provider.stage}-db-migrations
+        securityGroupId: sg-040f3e97dca057752
+      secret:
+        name: arn:aws:ssm:${self:provider.region}:${aws:accountId}:parameter/app/${self:provider.stage}/${self:service}/DATABASE_URL
 
 functions:
   api:

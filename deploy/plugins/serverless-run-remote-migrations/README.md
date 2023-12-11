@@ -29,6 +29,9 @@ custom:
           securityGroupId: sg-xxxxx # (Optional) will use default VPC security group if none provided
           subnetId: subnet-xxxxx # (Optional) will use random subnet in default VPC if none provided
           autoAssignPublicIp: ENABLED # ENABLED | DISABLED (Optional) will default to true if not provided. Use false if subnetId is private
+        secret: # (Options) will be omitted if not specified
+          name: DATABASE_URL # (Optional) Will default to DATABASE_URL
+          valueFrom: arn:aws:ssm:<region>:<account-id>:parameter/path/to/SECRET # (Required) Either SSM Parameter /arn or AWS Secret Arn to securely mount value into migrations task
 ```
 
 ## Usage
