@@ -1,8 +1,13 @@
 {
+  "npm.enableRunFromFolder": true,
+  "eslint.format.enable": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "eslint.validate": [
-    "typescript"
-  ]
+  "eslint.validate": ["javascript", "typescript"],
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "[html]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true
+  }
 }

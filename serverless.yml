@@ -35,6 +35,7 @@ plugins:
   - serverless-webpack
   - serverless-domain-manager
   - serverless-offline
+  - serverless-frontend-plugin
 
 custom:
   httpPort: ${env:HTTP_PORT, 3000}
@@ -43,15 +44,31 @@ custom:
     httpPort: ${self:custom.httpPort}
   # API Domain Configuration
   customDomain:
-    domainName: ${env:APP_DOMAIN}
+    domainName: ${env:API_DOMAIN_NAME}
     stage: $default
     basePath: ''
-    certificateName: '*.${env:HOSTED_ZONE_NAME}'
+    certificateArn: ${env:AWS_ACM_CERTIFICATE_ARN}
     createRoute53Record: true
     endpointType: REGIONAL
     securityPolicy: tls_1_2
     apiType: http
     autoDomain: true
+  serverless-frontend-plugin:
+    distDir: frontend/dist
+    build:
+      cwdDir: frontend
+      command:
+        - npm
+        - run
+        - build
+    distribution:
+      acmCertificateArn: ${env:AWS_ACM_CERTIFICATE_ARN}
+      dnsName: ${env:UI_DOMAIN_NAME}
+      hostedZoneName: ${env:HOSTED_ZONE_NAME}
+    offline:
+      command:
+        - npm
+        - start
   envByStage:
     dev:
       APP_NAME: ${self:service}

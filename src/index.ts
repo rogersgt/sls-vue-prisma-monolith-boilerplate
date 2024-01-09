@@ -1,13 +1,14 @@
+
+import helmet from 'helmet';
 import serverless from 'serverless-http';
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 import cookies from 'cookie-parser';
 import router from './router';
-import renderDashboard from './views/dashboard';
-import { renderFavicon } from './views/tools/renderImage';
 
 const app = express();
 
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({
@@ -16,10 +17,7 @@ app.use(cors({
 }));
 app.use(cookies());
 
-app.get('/', (_req, res) => res.redirect('/dashboard'));
-app.get('/favicon.ico', renderFavicon);
-app.use('/dashboard', renderDashboard);
-app.use('/api', router);
+app.use(router);
 
 app.use('*', (_req: Request, res: Response) => res.status(404).send('Endpoint not found'));
 
