@@ -61,6 +61,8 @@ custom:
         - npm
         - run
         - build
+      env:
+        VITE_API_BASE_URL: https://${env:API_DOMAIN_NAME}
     distribution:
       acmCertificateArn: ${env:AWS_ACM_CERTIFICATE_ARN}
       dnsName: ${env:UI_DOMAIN_NAME}
@@ -68,7 +70,7 @@ custom:
     offline:
       command:
         - echo
-        - "run npm start from the road-dog-frontend"
+        - "Run npm start from road-dog-frontend dir"
   envByStage:
     dev:
       APP_NAME: ${self:service}
