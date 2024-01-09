@@ -5,6 +5,12 @@ Band tour scheduling
 * `docker compose up -d`
 * `npm i`
 * `npm start`
+From another terminal window run:
+```bash
+cd road-dog-frontend
+npm i
+npm start
+```
 
 ## deploy
 ### Prerequisites

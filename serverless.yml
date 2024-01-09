@@ -54,9 +54,9 @@ custom:
     apiType: http
     autoDomain: true
   serverless-frontend-plugin:
-    distDir: frontend/dist
+    distDir: road-dog-frontend/dist
     build:
-      cwdDir: frontend
+      cwdDir: road-dog-frontend
       command:
         - npm
         - run
@@ -67,8 +67,8 @@ custom:
       hostedZoneName: ${env:HOSTED_ZONE_NAME}
     offline:
       command:
-        - npm
-        - start
+        - echo
+        - "run npm start from the road-dog-frontend"
   envByStage:
     dev:
       APP_NAME: ${self:service}
@@ -80,7 +80,7 @@ custom:
       APP_NAME: ${self:service}
       LOG_LEVEL: ${env:LOG_LEVEL, 'debug'}
       STAGE: ${self:provider.stage}
-      ALLOW_CORS_ORIGIN: https://${env:APP_DOMAIN}
+      ALLOW_CORS_ORIGIN: https://${env:APP_DOMAIN, '*'}
   serverless-run-remote-migrations:
     build:
       dockerfile: ./deploy/migrations.Dockerfile

@@ -14,7 +14,8 @@
     "run:remote:migrations:prod": "ENVIRONMENT=prod serverless runRemoteMigrations",
     "db:gen:client": "prisma generate client",
     "db:migrate:dev": "prisma migrate dev && npm run db:gen:client",
-    "db:migrate:deploy": "prisma migrate deploy"
+    "db:migrate:deploy": "prisma migrate deploy",
+    "postinstall": "(cd deploy/plugins/serverless-run-remote-migrations && npm i) && (cd road-dog-frontend && npm i)"
   },
   "author": "Grady T Rogers",
   "license": "UNLICENSED",
