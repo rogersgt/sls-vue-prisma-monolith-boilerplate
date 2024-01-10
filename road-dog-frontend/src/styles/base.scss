@@ -36,6 +36,11 @@
   --section-gap: 160px;
 }
 
+a {
+  text-decoration: none;
+  transition: 0.4s;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--vt-c-black);

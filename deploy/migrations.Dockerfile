@@ -6,6 +6,6 @@ WORKDIR /app
 ADD src /app/src
 ADD prisma /app/prisma
 ADD package.json package-lock.json tsconfig.json .eslintrc /app/
-RUN npm i
+RUN npm i --ignore-scripts
 
 CMD [ "npm", "run", "db:migrate:deploy" ]

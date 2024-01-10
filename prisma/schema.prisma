@@ -7,3 +7,144 @@ generator client {
   provider        = "prisma-client-js"
   binaryTargets   = ["native", "rhel-openssl-1.0.x"]
 }
+
+model User {
+  id String @id @default(uuid())
+
+  firstName String @map("first_name")
+  lastName String? @map("last_name")
+
+  email String @map("email")
+
+  bandMemberships BandUser[] @relation("band_user_user_id")
+  venueNotesCreated VenueNote[] @relation("venue_note_created_by_id")
+
+  @@index([email])
+  @@unique([email])
+  @@map("user")
+}
+
+model Address {
+  id String @id @default(uuid())
+
+  latitude Int
+  longitude Int
+
+  streetAddress String @map("street_address")
+  postalCode String? @map("postal_code")
+
+  cityId String @map("city_id")
+  city City @relation("address_city_id", fields: [cityId], references: [id])
+
+  venues Venue[] @relation("venue_address_id")
+
+  @@map("address")
+}
+
+// state
+model Province {
+  id String @id @default(uuid())
+  name String
+  abbreviation String
+
+  cities City[] @relation("city_province_id")
+
+  @@map("province")
+}
+
+model City {
+  id String @id @default(uuid())
+
+  abbreviation String
+  name String
+
+  provinceId String @map("province_id")
+  province Province @relation("city_province_id", fields: [provinceId], references: [id])
+
+  addresses Address[] @relation("address_city_id")
+  localBands Band[] @relation("band_city_id")
+
+  @@index([name])
+  @@index([provinceId])
+  @@map("city")
+}
+
+model Venue {
+  id String @id @default(uuid())
+
+  name String
+
+  addressId String @map("address_id")
+  address Address @relation("venue_address_id", fields: [addressId], references: [id])
+  shows Show[] @relation("show_venue_id")
+
+  venueNotes VenueNote[] @relation("venue_note_venue_id")
+
+  @@map("venue")
+}
+
+model VenueNote {
+  id String @id @default(uuid())
+
+  content String
+  venueId String @map("venue_id")
+  venue Venue @relation("venue_note_venue_id", fields: [venueId], references: [id])
+
+  createById String @map("created_by_id")
+  createdBy User @relation("venue_note_created_by_id", fields: [createById], references: [id])
+
+  bandId String? @map("band_id")
+  band Band? @relation("venue_note_band_id", fields: [bandId], references: [id])
+
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+
+  @@index([venueId])
+  @@map("venue_note")
+}
+
+model Band {
+  id String @id @default(uuid())
+  name String
+
+  showsPlaying Show[]
+  showsCreated Show[] @relation("show_band_owner_id")
+  cityId String @map("city_id")
+  city City @relation("band_city_id", fields: [cityId], references: [id])
+
+  venueNotes VenueNote[] @relation("venue_note_band_id")
+
+  @@index([cityId])
+  @@index([name])
+  @@map("band")
+}
+
+enum BandUserType {
+  MEMBER @map("MEMBER")
+  MANAGER @map("MANAGER")
+}
+
+model BandUser {
+  id String @id @default(uuid())
+
+  userId String? @map("user_id")
+  user User? @relation("band_user_user_id", fields: [userId], references: [id])
+  memberType BandUserType @map("member_type")
+
+  @@map("band_user")
+}
+
+model Show {
+  id String @id @default(uuid())
+
+  bandOwnerId String @map("band_owner_id")
+  bandOwner Band @relation("show_band_owner_id", fields: [bandOwnerId], references: [id])
+
+  eventName String? @map("event_name")
+  bands Band[]
+
+  venueId String @map("venue_id")
+  venue Venue @relation("show_venue_id", fields: [venueId], references: [id])
+
+  @@map("show")
+}
