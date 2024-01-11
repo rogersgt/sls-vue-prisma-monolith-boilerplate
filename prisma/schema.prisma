@@ -11,7 +11,7 @@ generator client {
 model User {
   id String @id @default(uuid())
 
-  firstName String @map("first_name")
+  firstName String? @map("first_name")
   lastName String? @map("last_name")
 
   email String @map("email")
@@ -113,6 +113,7 @@ model Band {
   city City @relation("band_city_id", fields: [cityId], references: [id])
 
   venueNotes VenueNote[] @relation("venue_note_band_id")
+  bandMembers BandUser[] @relation("band_user_band_id")
 
   @@index([cityId])
   @@index([name])
@@ -127,10 +128,14 @@ enum BandUserType {
 model BandUser {
   id String @id @default(uuid())
 
-  userId String? @map("user_id")
-  user User? @relation("band_user_user_id", fields: [userId], references: [id])
+  userId String @map("user_id")
+  user User @relation("band_user_user_id", fields: [userId], references: [id])
   memberType BandUserType @map("member_type")
 
+  bandId String @map("band_id")
+  band Band @relation("band_user_band_id", fields: [bandId], references: [id])
+
+  @@index([bandId])
   @@map("band_user")
 }
 
