@@ -3,6 +3,9 @@ import logger from '../logger';
 import { getAuthClient } from '../middleware/auth';
 
 export async function login(req: Request, res: Response) {
+  logger.debug({
+    data: req.body
+  })
   const { code } = (req.body ?? {}) as { code?: string };
   if (!code) {
     return res.status(400).send();

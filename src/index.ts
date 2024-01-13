@@ -13,10 +13,10 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors(
-//   {
-//   origin: process.env.ALLOW_CORS_ORIGIN || '*',
-//   credentials: true,
-// }
+  {
+    origin: process.env.ALLOW_CORS_ORIGIN || '*',
+    credentials: true,
+  }
 ));
 app.use(cookies());
 app.use(authMiddleware);

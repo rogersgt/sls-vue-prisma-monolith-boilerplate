@@ -23,6 +23,7 @@ export default defineComponent({
       }
     },
     callback({ code }: { code: string; prompt: string; scope: string; authuser: string }) {
+      console.log(code)
       const authStore = useAuthStore()
       authStore.login(code)
     }
