@@ -78,11 +78,13 @@ custom:
       STAGE: ${self:provider.stage}
       LOCALSTACK_ENDPOINT: http://localhost:4567
       ALLOW_CORS_ORIGIN: '*'
+      GOOGLE_APP_CLIENT_ID: ${ssm:/app/${self:provider.stage}/${self:service}/GOOGLE_APP_CLIENT_ID}
     prod:
       APP_NAME: ${self:service}
       LOG_LEVEL: ${env:LOG_LEVEL, 'debug'}
       STAGE: ${self:provider.stage}
       ALLOW_CORS_ORIGIN: https://${env:APP_DOMAIN, '*'}
+      GOOGLE_APP_CLIENT_ID: ${ssm:/app/${self:provider.stage}/${self:service}/GOOGLE_APP_CLIENT_ID}
   serverless-run-remote-migrations:
     build:
       dockerfile: ./deploy/migrations.Dockerfile

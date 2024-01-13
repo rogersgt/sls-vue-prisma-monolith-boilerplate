@@ -1,21 +1,23 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { RouterView } from 'vue-router'
-import AppNav from './components/AppNav.vue';
+// import AppNav from './components/common/AppNav.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
-    AppNav: AppNav,
+    // AppNav: AppNav,
     RouterView
   }
 })
 </script>
 
 <template>
-  <v-app>
-    <app-nav></app-nav>
-    <RouterView />
+  <v-app class="bg-primary">
+    <!-- <app-nav></app-nav> -->
+    <div class="mx-0 mt-14 w-100 mx-auto">
+      <RouterView />
+    </div>
   </v-app>
 </template>
 

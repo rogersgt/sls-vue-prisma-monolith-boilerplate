@@ -2,6 +2,7 @@ import './styles/main.scss'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import vue3GoogleLogin from 'vue3-google-login'
 
 // Vuetify
 import 'vuetify/styles'
@@ -22,5 +23,8 @@ const vuetify = createVuetify({
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
+app.use(vue3GoogleLogin, {
+  clientId: import.meta.env.VITE_GOOGLE_APP_ID
+})
 
 app.mount('#app')
