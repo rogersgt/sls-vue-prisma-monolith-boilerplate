@@ -9,23 +9,20 @@ export default defineComponent({
     async login(e: MouseEvent) {
       e.preventDefault()
       try {
-        console.log(import.meta.env.VITE_GOOGLE_APP_ID)
-        const resp = await googleOneTap({
+        await googleOneTap({
           autoLogin: true,
           clientId: import.meta.env.VITE_GOOGLE_APP_ID,
-          callback(response) {
-              console.log(response)
-          },
         });
-        console.log(resp);
       } catch (error) {
         console.log(error)
       }
     },
     callback({ code }: { code: string; prompt: string; scope: string; authuser: string }) {
-      console.log(code)
       const authStore = useAuthStore()
-      authStore.login(code)
+      authStore.login(code).then(() => {
+        // can't use vue-router here, so just redirecting via window
+        window.location.pathname = '/'
+      })
     }
   }
 })

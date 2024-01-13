@@ -15,6 +15,9 @@ model User {
   lastName String? @map("last_name")
 
   email String @map("email")
+  emailVerified Boolean @map("email_verified") @default(false)
+  pictureUrl String? @map("picture_url")
+  googleUserId String? @map("google_user_id")
 
   bandMemberships BandUser[] @relation("band_user_user_id")
   venueNotesCreated VenueNote[] @relation("venue_note_created_by_id")

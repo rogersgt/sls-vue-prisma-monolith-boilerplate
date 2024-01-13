@@ -3,6 +3,7 @@ import './styles/main.scss'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import vue3GoogleLogin from 'vue3-google-login'
+import PersistedState from 'pinia-plugin-persistedstate';
 
 // Vuetify
 import 'vuetify/styles'
@@ -20,7 +21,9 @@ const vuetify = createVuetify({
   directives,
 })
 
-app.use(createPinia())
+const pinia = createPinia()
+pinia.use(PersistedState)
+app.use(pinia)
 app.use(router)
 app.use(vuetify)
 app.use(vue3GoogleLogin, {

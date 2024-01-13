@@ -1,7 +1,9 @@
 import { User } from '@prisma/client';
 import getPrismaClient from '../client';
 
-export async function upsertUser(u: Pick<User, 'email'> & Partial<Pick<User, 'lastName' | 'firstName'>>) {
+export async function upsertUser(
+  u: Pick<User, 'email'> & Partial<Pick<User, 'lastName' | 'firstName' | 'emailVerified' | 'googleUserId' | 'pictureUrl'>>
+) {
   const prisma = await getPrismaClient();
   return prisma.user.upsert({
     where: {
@@ -10,11 +12,17 @@ export async function upsertUser(u: Pick<User, 'email'> & Partial<Pick<User, 'la
     create: {
       email: u.email,
       ...(u.firstName && { firstName: u.firstName }),
-      ...(u.lastName && { lastName: u.lastName })
+      ...(u.lastName && { lastName: u.lastName }),
+      ...(u.googleUserId && { googleUserId: u.googleUserId }),
+      ...(u.emailVerified && { emailVerified: u.emailVerified }),
+      ...(u.pictureUrl && { pictureUrl: u.pictureUrl }),
     },
     update: {
-      firstName: u.firstName,
-      ...(u.lastName && { lastName: u.lastName })
+      ...(u.firstName && { firstName: u.firstName }),
+      ...(u.lastName && { lastName: u.lastName }),
+      ...(u.googleUserId && { googleUserId: u.googleUserId }),
+      ...(u.emailVerified && { emailVerified: u.emailVerified }),
+      ...(u.pictureUrl && { pictureUrl: u.pictureUrl }),
     }
   })
 }

@@ -1,16 +1,12 @@
 import httpClient from '@/clients/http';
+import type { User } from '@/types/core';
 
 type TokenResponse = {
   access_token: string;
-  expiry_date: number;
-  id_token: string;
-  refresh_token: string;
-  scope: string;
-  token_type: 'Bearer'
 }
 
 export async function login(code: string) {
-  const { data }: { data: { tokens: TokenResponse } } = await httpClient.post('/login', {
+  const { data }: { data: { tokens: TokenResponse; user: User } } = await httpClient.post('/login', {
     code
   })
 
