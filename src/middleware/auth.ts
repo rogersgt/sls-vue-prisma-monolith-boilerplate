@@ -3,7 +3,7 @@ import { OAuth2Client } from 'google-auth-library';
 import logger from '../logger';
 import jwt from 'jsonwebtoken';
 import config from '../config';
-import { WHITELISTE_ROUTES } from '../constants';
+import { COOKIE_ACCESS_TOKEN_NAME, WHITELISTE_ROUTES } from '../constants';
 
 let authClient: OAuth2Client | undefined;
 
@@ -22,7 +22,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
   logger.debug({ baseUrl: req.url })
   if (WHITELISTE_ROUTES.includes(req.url)) return next();
   try {
-    const jwtToken = req.headers.authorization?.replace('Bearer ', '');
+    const jwtToken = req.cookies[COOKIE_ACCESS_TOKEN_NAME];
     if (!jwtToken) {
       return res.status(401).send()
     }

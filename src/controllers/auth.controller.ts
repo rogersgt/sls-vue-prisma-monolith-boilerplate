@@ -47,6 +47,7 @@ export async function login(req: Request, res: Response) {
     // in this server
     const appJwt = jwt.sign({
       sub: decodedIdToken.sub,
+      email: user.email,
     }, JWT_SECRET, {
       expiresIn: '1 day',
     });

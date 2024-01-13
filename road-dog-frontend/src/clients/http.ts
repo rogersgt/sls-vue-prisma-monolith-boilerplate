@@ -1,4 +1,3 @@
-import useNavStore from '@/stores/nav.store';
 import axios from 'axios';
 
 const httpClient = axios.create({
@@ -8,8 +7,7 @@ const httpClient = axios.create({
 
 httpClient.interceptors.response.use((response) => {
   if (response.status === 401) {
-    const navStore = useNavStore();
-    navStore.goToLogin()
+    // FIXME: redirect to login
   }
   return response;
 });
