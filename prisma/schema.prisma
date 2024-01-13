@@ -24,6 +24,7 @@ model User {
 
   @@index([email])
   @@unique([email])
+  @@unique([googleUserId])
   @@map("user")
 }
 
@@ -128,6 +129,11 @@ enum BandUserType {
   MANAGER @map("MANAGER")
 }
 
+enum BandRole {
+  OWNER @map("owner")
+  MEMBER @map("member")
+}
+
 model BandUser {
   id String @id @default(uuid())
 
@@ -137,6 +143,8 @@ model BandUser {
 
   bandId String @map("band_id")
   band Band @relation("band_user_band_id", fields: [bandId], references: [id])
+
+  role BandRole @default(MEMBER)
 
   @@index([bandId])
   @@map("band_user")
