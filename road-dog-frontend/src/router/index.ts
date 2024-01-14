@@ -24,7 +24,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
   if (to.name !== 'login') {
-    await userStore.getLoggedInUser()
+    await userStore.fetchLoggedInUser();
   }
   next()
 })

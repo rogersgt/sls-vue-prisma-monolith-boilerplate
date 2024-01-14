@@ -9,7 +9,7 @@ const useUserStore = defineStore('UserStore', () => {
     [id: string]: User
   }>({});
 
-  let loggedInUserId: string | undefined;
+  const loggedInUserId = ref('');
 
   const fetchUserById = async (id: string) => {
     const resp = await userService.getUser(id);
@@ -52,15 +52,15 @@ const useUserStore = defineStore('UserStore', () => {
   };
 
   const setLoggedInUser = (userId: string) => {
-    loggedInUserId = userId;
+    loggedInUserId.value = userId;
   };
 
-  const loggedInUser$ = computed(() => loggedInUserId ? userCache.value[loggedInUserId] : null);
+  const loggedInUser$ = computed(() => loggedInUserId.value ? userCache.value[loggedInUserId.value] : null);
 
   return {
     getUserById,
     fetchUserById,
-    getLoggedInUser: fetchLoggedInUser,
+    fetchLoggedInUser,
     loggedInUser$,
     setLoggedInUser,
     receiveUsers

@@ -1,9 +1,9 @@
 <template>
-  <v-app-bar class="flex w-100">
-    <!-- <v-app-bar-title>Road Dog</v-app-bar-title> -->
-    <v-app-bar-nav-icon>
-      <v-btn @click="toggleSideBar($event)">toggle</v-btn>
-    </v-app-bar-nav-icon>
+  <v-app-bar class="d-flex bg-white">
+    <v-btn variant="flat" @click="toggleSideBar($event)">
+      <font-awesome-icon icon="fa-bars" class="text-primary"></font-awesome-icon>
+    </v-btn>
+    <h1 class="m-0 text-primary">Road Dog</h1>
   </v-app-bar>
 
 
