@@ -45,6 +45,17 @@ model Address {
   @@map("address")
 }
 
+model Country {
+  id String @id @default(uuid())
+  name String
+  abbreviation String
+
+  states Province[] @relation("province_country_id")
+
+  @@unique([abbreviation])
+  @@map("country")
+}
+
 // state
 model Province {
   id String @id @default(uuid())
@@ -53,6 +64,10 @@ model Province {
 
   cities City[] @relation("city_province_id")
 
+  countryId String @map("country_id")
+  country Country @relation("province_country_id", fields: [countryId], references: [id])
+
+  @@unique([abbreviation])
   @@map("province")
 }
 

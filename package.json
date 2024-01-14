@@ -13,8 +13,8 @@
     "deploy": "npm run deploy:migrations:prod && npm run deploy:app:prod",
     "run:remote:migrations:prod": "ENVIRONMENT=prod serverless runRemoteMigrations",
     "db:gen:client": "prisma generate client",
-    "db:migrate:dev": "prisma migrate dev && npm run db:gen:client",
-    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev && npm run db:gen:client && prisma db seed",
+    "db:migrate:deploy": "prisma migrate deploy && prisma db seed",
     "postinstall": "(cd deploy/plugins/serverless-run-remote-migrations && npm i) && (cd road-dog-frontend && npm i)"
   },
   "author": "Grady T Rogers",
@@ -61,6 +61,7 @@
     "winston": "3.11.0"
   },
   "prisma": {
-    "schema": "prisma/schema.prisma"
+    "schema": "prisma/schema.prisma",
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\",\"noImplicitAny\":false} src/db/seed/index.ts"
   }
 }
