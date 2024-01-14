@@ -1,14 +1,23 @@
 import { Request, Response } from 'express';
-import logger from '../logger';
+import { getLoggedInUserOrThrow } from '../utils/auth';
+import { HttpError } from '../types/error';
+import { handleError } from '../utils/error';
+import * as userService from '../db/services/user.dbService';
 
-export async function getUser(_req: Request, res: Response) {
-  // const { id: requestedUserId } = req.params;
+export async function getUser(req: Request, res: Response) {
+  const { id: requestedUserId } = req.params;
+
   try {
-    // TODO: Get user query
+    const loggedInUser = await getLoggedInUserOrThrow(req);
 
-    return res.send({})
-  } catch (error) {
-    logger.error(error);
-    return res.status(500).send('There was an error fetching user')
+    if (requestedUserId && requestedUserId !== loggedInUser.id) {
+      // TODO: check permissions for users
+    }
+
+    const responseUser = requestedUserId ? await userService.getUser(requestedUserId) : loggedInUser;
+
+    return res.send(responseUser);
+  } catch (error: unknown) {
+    return handleError(error as HttpError, res);
   }
 }

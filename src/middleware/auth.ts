@@ -32,10 +32,9 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
       throw new Error('server misconfiguration');
     }
 
-    const decoded = await jwt.verify(jwtToken, JWT_SECRET);
-    logger.debug({ 
-      decoded
-    })
+    const decoded = await jwt.verify(jwtToken, JWT_SECRET) as jwt.JwtPayload & { email: string };
+
+    req.headers['app.user.email'] = decoded.email;
 
     next();
   } catch (error) {

@@ -55,3 +55,12 @@ export async function removeUserFromBand(userId: string, bandId: string) {
     }
   });
 }
+
+export async function getUser(id: string) {
+  const prisma = await getPrismaClient();
+  return prisma.user.findUnique({
+    where: {
+      id
+    },
+  });
+}
