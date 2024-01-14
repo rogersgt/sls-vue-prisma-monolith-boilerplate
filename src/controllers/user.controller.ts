@@ -10,11 +10,20 @@ export async function getUser(req: Request, res: Response) {
   try {
     const loggedInUser = await getLoggedInUserOrThrow(req);
 
-    if (requestedUserId && requestedUserId !== loggedInUser.id) {
+    const requestIsForSelf = !requestedUserId || requestedUserId === loggedInUser.id;
+    if (!requestIsForSelf) {
       // TODO: check permissions for users
     }
 
-    const responseUser = requestedUserId ? await userService.getUser(requestedUserId) : loggedInUser;
+    const responseUser = await userService.getUser(requestIsForSelf ? loggedInUser.id : requestedUserId, {
+      ...(requestIsForSelf && {
+        bandMemberships: {
+          include: {
+            band: true
+          }
+        }
+      })
+    });
 
     return res.send(responseUser);
   } catch (error: unknown) {

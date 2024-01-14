@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import getPrismaClient from '../client';
 
 export async function upsertUser(
@@ -56,11 +56,12 @@ export async function removeUserFromBand(userId: string, bandId: string) {
   });
 }
 
-export async function getUser(id: string) {
+export async function getUser<T extends Prisma.Subset<Prisma.UserInclude, T>>(id: string, include: T) {
   const prisma = await getPrismaClient();
   return prisma.user.findUnique({
     where: {
       id
     },
+    include
   });
 }
