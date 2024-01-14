@@ -8,10 +8,12 @@
         <font-awesome-icon icon="fa-x"></font-awesome-icon>
       </v-btn>
     </div>
-    <img class="w-50 profile-image rounded" src="@/assets/default-profile-image.webp" alt="No image">
-    <div>
-      <p>Signed in as <span>{{ loggedInUser$?.firstName }} {{ loggedInUser$?.lastName }}</span></p>
-    </div>
+    <img v-if="!loggedInUser$?.pictureUrl" class="w-50 profile-image rounded-circle" src="@/assets/default-profile-image.webp" alt="No image">
+    <img v-if="!!loggedInUser$?.pictureUrl" class="w-50 profile-image rounded-circle" :src="loggedInUser$.pictureUrl" :alt="loggedInUser$.firstName + ' ' + loggedInUser$.lastName">
+    <h2>{{ loggedInUser$?.firstName }} {{ loggedInUser$?.lastName }}</h2>
+
+    <p class="flex align-middle"><font-awesome-icon icon="fa-envelope"></font-awesome-icon> {{ loggedInUser$?.email }}</p>
+    <p>Part of {{ loggedInUser$?.bandMemberships.length }} bands</p>
   </div>
 </template>
 
@@ -22,7 +24,7 @@ import { storeToRefs } from 'pinia';
 import useUserStore from '@/stores/user.store';
 
 export default defineComponent({
-  name: 'SettingsSidePanel',
+  name: 'ProfileSidePanel',
   setup() {
     const navStore = useNavStore();
     const { sidePanelOpen } = storeToRefs(navStore);
@@ -47,8 +49,8 @@ export default defineComponent({
   transition: 0.5s;
   transition-property: margin-left;
   z-index: 20;
-  height: 90vh;
-  margin-top: 10vh;
+  height: 93vh;
+  margin-top: 7vh;
   display: flex;
   flex-direction: column;
   align-items: center;
