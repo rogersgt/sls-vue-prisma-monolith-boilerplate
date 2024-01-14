@@ -30,8 +30,16 @@ export default defineComponent({
   <v-app class="bg-black">
     <app-nav v-if="showNav"></app-nav>
     <ProfileSidePanel v-if="showNav" />
-    <div class="mx-0 mt-14 w-100 mx-auto">
+    <div class="container">
       <RouterView />
     </div>
   </v-app>
 </template>
+
+<style scoped lang="scss">
+.container {
+  width: 100%;
+  margin: 65px 0 0 0;
+  padding: 0;
+}
+</style>

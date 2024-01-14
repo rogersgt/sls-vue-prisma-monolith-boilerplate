@@ -10,7 +10,8 @@ export default createVuetify({
         colors: {
           primary: colors.blue.lighten2,
           secondary: colors.grey.darken4,
-          highlight: colors.yellow.accent3
+          highlight: colors.yellow.accent3,
+          grey: colors.grey.lighten1
         }
       },
     },
