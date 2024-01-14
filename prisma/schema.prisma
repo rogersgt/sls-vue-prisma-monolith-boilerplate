@@ -83,6 +83,7 @@ model City {
   addresses Address[] @relation("address_city_id")
   localBands Band[] @relation("band_city_id")
 
+  @@unique([abbreviation, provinceId])
   @@index([name])
   @@index([provinceId])
   @@map("city")
