@@ -46,7 +46,6 @@ export default defineComponent({
         </v-btn>
       </GoogleLogin>
     </div>
-    <!-- <v-btn @click="login($event)">Login with Google</v-btn> -->
   </v-container>
 </template>
 
