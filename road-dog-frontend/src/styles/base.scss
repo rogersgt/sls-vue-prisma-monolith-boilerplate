@@ -63,7 +63,7 @@ a {
   font-weight: normal;
 }
 
-body {
+body, .bg-black {
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);

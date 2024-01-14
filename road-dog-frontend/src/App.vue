@@ -13,7 +13,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-app class="bg-primary">
+  <v-app class="bg-black">
     <!-- <app-nav></app-nav> -->
     <div class="mx-0 mt-14 w-100 mx-auto">
       <RouterView />

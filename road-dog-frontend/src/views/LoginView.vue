@@ -29,10 +29,19 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-container class="w-25 mx-auto flex center bg-white ">
-    <GoogleLogin :callback="callback" >
-      <v-btn>Login with Google</v-btn>
-    </GoogleLogin>
+  <v-container class="w-25 mx-auto flex center bg-white rounded login-form">
+    <div class="flex justify-content text-center content-center">
+      <h1 class="mt-2">Login to Road Dog</h1>
+      <GoogleLogin class="mt-2 mb-2" :callback="callback">
+        <v-btn variant="elevated" class="bg-primary">Login with Google</v-btn>
+      </GoogleLogin>
+    </div>
     <!-- <v-btn @click="login($event)">Login with Google</v-btn> -->
   </v-container>
 </template>
+
+<style lang="scss" scoped>
+.login-form {
+  min-width: 400px;
+}
+</style>
