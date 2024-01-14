@@ -107,26 +107,37 @@ model VenueNote {
   @@map("venue_note")
 }
 
+model Genre {
+  id String @id @default(uuid())
+  name String
+
+  bands Band[]
+
+  @@index([name])
+  @@unique([name])
+  @@map("genre")
+}
+
 model Band {
   id String @id @default(uuid())
   name String
 
   showsPlaying Show[]
-  showsCreated Show[] @relation("show_band_owner_id")
+  showsOrganized Show[] @relation("show_band_organizer_id")
   cityId String @map("city_id")
   city City @relation("band_city_id", fields: [cityId], references: [id])
 
   venueNotes VenueNote[] @relation("venue_note_band_id")
   bandMembers BandUser[] @relation("band_user_band_id")
 
+  founded DateTime?
+  genres Genre[]
+  websiteUrl String? @map("website_url")
+  instagramHandle String? @map("instagram_handle")
+
   @@index([cityId])
   @@index([name])
   @@map("band")
-}
-
-enum BandUserType {
-  MEMBER @map("MEMBER")
-  MANAGER @map("MANAGER")
 }
 
 enum BandRole {
@@ -139,7 +150,6 @@ model BandUser {
 
   userId String @map("user_id")
   user User @relation("band_user_user_id", fields: [userId], references: [id])
-  memberType BandUserType @map("member_type")
 
   bandId String @map("band_id")
   band Band @relation("band_user_band_id", fields: [bandId], references: [id])
@@ -153,8 +163,8 @@ model BandUser {
 model Show {
   id String @id @default(uuid())
 
-  bandOwnerId String @map("band_owner_id")
-  bandOwner Band @relation("show_band_owner_id", fields: [bandOwnerId], references: [id])
+  bandOrganizerId String @map("band_organizer_id")
+  bandOrganizer Band @relation("show_band_organizer_id", fields: [bandOrganizerId], references: [id])
 
   eventName String? @map("event_name")
   bands Band[]

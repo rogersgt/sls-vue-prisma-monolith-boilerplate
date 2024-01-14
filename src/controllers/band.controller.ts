@@ -4,6 +4,8 @@ import { HttpError } from '../types/error';
 import { getDbPaginationFormQueryParams } from '../utils/api';
 import * as bandService from '../db/services/band.dbService';
 import logger from '../logger';
+import { Band, Genre } from '@prisma/client';
+import { getLoggedInUserOrThrow } from '../utils/auth';
 
 export async function searchBands(req: Request, res: Response) {
   const { skip, take } = getDbPaginationFormQueryParams(req);
@@ -34,6 +36,30 @@ export async function listBandsByCity(req: Request, res: Response) {
 
     const bands = await bandService.listBandsByCity(cityId, { skip, take });
     return res.send(bands);
+  } catch (error) {
+    return handleError(error as HttpError, res);
+  }
+}
+
+export async function createBand(req: Request, res: Response) {
+  try {
+    const loggedInUser = await getLoggedInUserOrThrow(req);
+    const bandInput = req.body as Partial<Band> & { genres: Genre[] };
+    if (!bandInput.cityId || !bandInput.name) {
+      return res.status(400).send('name and cityId are required for createBand');
+    }
+
+    if (!bandInput.genres.every((genre) => !!genre.id)) {
+      return res.status(400).send('genre.id is required for creating a band');
+    }
+
+    const createdBand = await bandService.createBand({
+      cityId: bandInput.cityId ?? '',
+      name: bandInput.name ?? '',
+      genres: bandInput.genres.map(({ id }) => ({ id }))
+    }, loggedInUser.id);
+
+    return res.send(createdBand);
   } catch (error) {
     return handleError(error as HttpError, res);
   }
