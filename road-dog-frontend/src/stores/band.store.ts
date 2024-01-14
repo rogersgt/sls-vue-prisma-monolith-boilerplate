@@ -1,14 +1,15 @@
 import type { Band } from '@/types/core';
 import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
 const useBandStore = defineStore('BandStore', () => {
-  let bandCache: {
+  const bandCache = ref<{
     [bandId: string]: Band
-  } = {};
+  }>({});
 
   const receiveBands = (BandUpdates: Band[]) => {
     const newBands = BandUpdates.reduce((prev, curr) => {
-      const existingCache = bandCache[curr.id];
+      const existingCache = bandCache.value[curr.id];
       return {
         ...prev,
         [curr.id]: {
@@ -18,16 +19,17 @@ const useBandStore = defineStore('BandStore', () => {
       }
     }, {} as { [id: string]: Band});
 
-    bandCache = {
-      ...bandCache,
+    bandCache.value = {
+      ...bandCache.value,
       ...newBands
     }
   }
 
 
   const getBandById = async (bandId: string) => {
-    const cachedBand = bandCache[bandId];
+    const cachedBand = bandCache.value[bandId];
     if (cachedBand) return cachedBand;
+    return null;
   }
 
   return {

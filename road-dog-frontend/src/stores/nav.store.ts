@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 
 const useNavStore = defineStore('NavStore', () => {
-  let sidePanelOpen = false;
+  const sidePanelOpen = ref(false);
 
   const toggleSidePanel = () => {
-    sidePanelOpen = !sidePanelOpen;
+    sidePanelOpen.value = !sidePanelOpen.value;
   }
 
   const goToLogin = () => {

@@ -1,13 +1,13 @@
 import { Band, type User } from '@/types/core';
 import { defineStore } from 'pinia';
 import * as userService from '@/services/user.service';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import useBandStore from './band.store';
 
 const useUserStore = defineStore('UserStore', () => {
-  let userCache: {
+  const userCache = ref<{
     [id: string]: User
-  } = {};
+  }>({});
 
   let loggedInUserId: string | undefined;
 
@@ -18,7 +18,7 @@ const useUserStore = defineStore('UserStore', () => {
   };
 
   const getUserById = (id: string) => {
-    const existingUser = userCache[id];
+    const existingUser = userCache.value[id];
     return existingUser as User;
   }
 
@@ -28,7 +28,7 @@ const useUserStore = defineStore('UserStore', () => {
       const { bandMemberships } = curr;
       const bands = bandMemberships.map(({ band, bandId }) => band ?? new Band({ id: bandId }));
       bandStore.receiveBands(bands);
-      const existingCache = userCache[curr.id];
+      const existingCache = userCache.value[curr.id];
       return {
         ...prev,
         [curr.id]: {
@@ -38,8 +38,8 @@ const useUserStore = defineStore('UserStore', () => {
       }
     }, {} as { [id: string]: User});
 
-    userCache = {
-      ...userCache,
+    userCache.value = {
+      ...userCache.value,
       ...newUsers
     }
   };
@@ -55,7 +55,7 @@ const useUserStore = defineStore('UserStore', () => {
     loggedInUserId = userId;
   };
 
-  const loggedInUser$ = computed(() => loggedInUserId ? userCache[loggedInUserId] : null);
+  const loggedInUser$ = computed(() => loggedInUserId ? userCache.value[loggedInUserId] : null);
 
   return {
     getUserById,
