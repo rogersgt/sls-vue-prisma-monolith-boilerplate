@@ -39,6 +39,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-ssm": "3.485.0",
+    "@fortawesome/fontawesome-svg-core": "6.5.1",
+    "@fortawesome/free-solid-svg-icons": "6.5.1",
+    "@fortawesome/vue-fontawesome": "3.0.5",
     "@prisma/client": "^5.6.0",
     "axios": "1.6.5",
     "casbin": "5.28.0",
