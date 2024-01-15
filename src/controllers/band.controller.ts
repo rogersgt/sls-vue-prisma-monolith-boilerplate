@@ -49,7 +49,7 @@ export async function createBand(req: Request, res: Response) {
       throw new HttpError(400, 'name and cityId are required for createBand')
     }
 
-    if (!bandInput.genres.every((genre) => !!genre.id)) {
+    if (bandInput.genres?.length && !bandInput.genres.every((genre) => !!genre.id)) {
       throw new HttpError(400, 'genre.id is required for creating a band')
     }
 
