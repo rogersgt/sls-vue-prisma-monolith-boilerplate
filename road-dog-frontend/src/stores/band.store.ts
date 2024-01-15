@@ -2,6 +2,7 @@ import type { Band } from '@/types/core';
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import useUserStore from './user.store';
+import * as bandService from '@/services/band.service';
 
 const useBandStore = defineStore('BandStore', () => {
   const bandCache = ref<{
@@ -43,9 +44,21 @@ const useBandStore = defineStore('BandStore', () => {
     const cachedBand = bandCache.value[bandId];
     if (cachedBand) return cachedBand;
     return null;
+  };
+
+  const createMyBand = async ({ name, cityId, genres = [] }: Band) => {
+    console.log(genres)
+    const band = await bandService.createBand({
+      name,
+      cityId,
+      genres
+    });
+    receiveBands([band]);
+    return band;
   }
 
   return {
+    createMyBand,
     loggedInUserBands$,
     getBandById,
     receiveBands

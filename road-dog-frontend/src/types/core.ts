@@ -118,17 +118,20 @@ export class Band {
   name: string;
   cityId: string;
   city: City;
+  genres: Genre[];
 
   constructor({
     id,
     name,
     cityId,
-    city
+    city,
+    genres = []
   }: Partial<{
     id: string;
     name: string;
     cityId: string;
     city: Partial<City>;
+    genres: Partial<Genre>[]
   }>) {
     this.id = id ?? '';
     this.name = name ?? '';
@@ -140,7 +143,8 @@ export class Band {
         ...city?.province,
         id: city?.provinceId ?? ''
       })
-    })
+    });
+    this.genres = genres.map((g) => new Genre({ ...g }))
   }
 }
 
@@ -174,5 +178,15 @@ export class BandMembership {
       id: user?.id ?? userId ?? ''
     });
     this.role = role ?? 'member';
+  }
+}
+
+export class Genre {
+  id: string;
+  name: string;
+
+  constructor({ id, name }: Partial<{ id: string; name: string }>) {
+    this.id = id ?? '';
+    this.name = name ?? '';
   }
 }
