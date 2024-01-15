@@ -122,6 +122,8 @@ export class Band {
   instagramHandle?: string;
   websiteUrl?: string;
   founded?: Date;
+  spotifyArtistId?: string;
+  bandMemberShips: BandMembership[];
 
   constructor({
     id,
@@ -131,7 +133,9 @@ export class Band {
     genres = [],
     founded,
     websiteUrl,
-    instagramHandle
+    instagramHandle,
+    spotifyArtistId,
+    bandMemberships = []
   }: Partial<{
     id: string;
     name: string;
@@ -141,6 +145,8 @@ export class Band {
     instagramHandle: string;
     websiteUrl: string;
     founded: Date;
+    spotifyArtistId: string;
+    bandMemberships: BandMembership[];
   }>) {
     this.id = id ?? '';
     this.name = name ?? '';
@@ -157,6 +163,8 @@ export class Band {
     this.founded = founded;
     this.websiteUrl = websiteUrl;
     this.instagramHandle = instagramHandle;
+    this.spotifyArtistId = spotifyArtistId ?? '';
+    this.bandMemberShips = bandMemberships.map((membership) => new BandMembership({ ...membership }));
   }
 }
 

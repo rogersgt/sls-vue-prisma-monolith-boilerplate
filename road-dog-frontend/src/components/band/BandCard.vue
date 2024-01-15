@@ -1,12 +1,28 @@
 <template>
   <v-card class="band-card">
     <v-card-title>{{ band$?.name }}</v-card-title>
-    <v-card-subtitle>{{ band$?.city.name }}</v-card-subtitle>
+    <v-card-subtitle>
+      <v-chip-group
+          mandatory
+          selected-class="text-primary"
+        >
+          <v-chip
+            v-for="genre in band$?.genres"
+            :key="genre.id"
+          >
+            {{ genre.name }}
+          </v-chip>
+        </v-chip-group>
+    </v-card-subtitle>
     <v-card-text>
       <p v-if="founded$">Started in {{ founded$ }}</p>
       <a class="d-flex" target="_blank" v-if="band$?.instagramHandle" :href="`https://www.instagram.com/${band$.instagramHandle}`">
-        <img class="imgLink" src="@/assets/ig_icon.svg" alt="Instagram link">
-        <span>{{ band$.instagramHandle }}</span>
+        <img class="imgLink mt-auto mb-auto rounded-circle" src="@/assets/ig_icon.svg" alt="Instagram link">
+        <span class="mt-auto mb-auto">{{ band$.instagramHandle }}</span>
+      </a>
+      <a class="d-flex" target="_blank" v-if="band$?.spotifyArtistId" :href="`https://open.spotify.com/artist/${band$.spotifyArtistId}`">
+        <img class="imgLink mt-auto mb-auto rounded-circle" src="@/assets/spotify_icon.svg" alt="Spotify link">
+        <span class="mt-auto mb-auto">Spotify</span>
       </a>
     </v-card-text>
   </v-card>
@@ -38,6 +54,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .imgLink {
   width: 30px;
+  margin-right: 5px;
 }
 
 .band-card {

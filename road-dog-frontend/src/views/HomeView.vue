@@ -4,6 +4,8 @@ import { storeToRefs } from 'pinia';
 import { defineComponent } from 'vue';
 import CreateBandDialog from '@/components/band/CreateBandDialog.vue';
 import BandCard from '@/components/band/BandCard.vue';
+import { ref } from 'vue';
+import { onMounted } from 'vue';
 
 export default defineComponent({
   name: 'HomeView',
@@ -12,11 +14,25 @@ export default defineComponent({
     CreateBandDialog
   },
   setup() {
+    const isLoading = ref<boolean>(false);
     const bandStore = useBandStore();
     const { loggedInUserBands$ } = storeToRefs(bandStore);
 
+    onMounted(async () => {
+      try {
+        isLoading.value = true;
+        await bandStore.fetchBandsForLoggedInUser();
+        isLoading.value = false;
+      } catch (error) {
+        console.error(error);
+        // TODO: show error toast
+        isLoading.value = false;
+      }
+    })
+
     return {
       bands: loggedInUserBands$,
+      isLoading
     }
   }
 })
@@ -31,17 +47,18 @@ export default defineComponent({
           'w-100': $vuetify.display.md || $vuetify.display.sm || $vuetify.display.xs
         }" v-for="band in bands" :key="band.id" :band-id="band.id"></band-card>
 
-        <!-- <v-skeleton-loader
+        <v-skeleton-loader
           :class="{
             'w-50 mx-auto mt-2': true,
             'w-100': $vuetify.display.md || $vuetify.display.sm || $vuetify.display.xs
           }"
           type="card"
           loading
-        ></v-skeleton-loader> -->
+          v-if="isLoading"
+        ></v-skeleton-loader>
       </div>
 
-      <div v-if="!bands.length" class="d-block mt-16">
+      <div v-if="!bands.length && !isLoading" class="d-block mt-16">
         <h3 class="my-2">You do not belong to any bands</h3>
         <v-btn class="bg-primary text-white pa-2 my-2" variant="elevated">
           <font-awesome-icon icon="fa-plus"></font-awesome-icon>

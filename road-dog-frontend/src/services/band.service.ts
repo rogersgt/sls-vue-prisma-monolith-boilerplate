@@ -24,3 +24,12 @@ export async function createBand(band: Pick<Band, 'name' | 'cityId' | 'genres'>)
     ...data
   })
 }
+
+export async function listBandsForLoggedInUser() {
+  const {
+    data
+  }: {
+    data: Band[]
+  } = await httpClient.get('/band');
+  return data.map((b) => new Band({ ...b }));
+}
