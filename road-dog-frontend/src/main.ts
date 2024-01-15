@@ -9,14 +9,23 @@ import PersistedState from 'pinia-plugin-persistedstate';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 // import specific icons
-import { faG, faCircleNotch, faSpinner, faBars, faX, faEnvelope, faPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+  faG,
+  faCircleNotch,
+  faSpinner,
+  faBars,
+  faX,
+  faEnvelope,
+  faPlus,
+  
+} from '@fortawesome/free-solid-svg-icons'
 
 /* -- Vuetify -- */
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import colors from 'vuetify/util/colors'
+// import colors from 'vuetify/util/colors'
 
 import App from './App.vue'
 import router from './router'
@@ -28,6 +37,16 @@ library.add(faG, faCircleNotch, faSpinner, faBars, faX, faEnvelope, faPlus)
 const vuetify = createVuetify({
   components,
   directives,
+  display: {
+    mobileBreakpoint: 'sm',
+    thresholds: {
+      xs: 0,
+      sm: 340,
+      md: 540,
+      lg: 800,
+      xl: 1280,
+    },
+  },
   theme: {
     defaultTheme: 'custom',    
     themes: {

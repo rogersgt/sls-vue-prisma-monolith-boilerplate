@@ -119,19 +119,28 @@ export class Band {
   cityId: string;
   city: City;
   genres: Genre[];
+  instagramHandle?: string;
+  websiteUrl?: string;
+  founded?: Date;
 
   constructor({
     id,
     name,
     cityId,
     city,
-    genres = []
+    genres = [],
+    founded,
+    websiteUrl,
+    instagramHandle
   }: Partial<{
     id: string;
     name: string;
     cityId: string;
     city: Partial<City>;
-    genres: Partial<Genre>[]
+    genres: Partial<Genre>[];
+    instagramHandle: string;
+    websiteUrl: string;
+    founded: Date;
   }>) {
     this.id = id ?? '';
     this.name = name ?? '';
@@ -144,7 +153,10 @@ export class Band {
         id: city?.provinceId ?? ''
       })
     });
-    this.genres = genres.map((g) => new Genre({ ...g }))
+    this.genres = genres.map((g) => new Genre({ ...g }));
+    this.founded = founded;
+    this.websiteUrl = websiteUrl;
+    this.instagramHandle = instagramHandle;
   }
 }
 
