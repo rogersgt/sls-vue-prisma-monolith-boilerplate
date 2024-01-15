@@ -74,7 +74,6 @@ model Province {
 model City {
   id String @id @default(uuid())
 
-  abbreviation String
   name String
 
   provinceId String @map("province_id")
@@ -83,7 +82,7 @@ model City {
   addresses Address[] @relation("address_city_id")
   localBands Band[] @relation("band_city_id")
 
-  @@unique([abbreviation, provinceId])
+  @@unique([name, provinceId])
   @@index([name])
   @@index([provinceId])
   @@map("city")

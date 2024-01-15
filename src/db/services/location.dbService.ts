@@ -62,13 +62,13 @@ export async function searchCities(
   })
 }
 
-export async function createCity(city: Pick<City, 'abbreviation' | 'name' | 'provinceId'>) {
+export async function createCity(city: Pick<City, | 'name' | 'provinceId'>) {
   const prisma = await getPrismaClient();
   return prisma.city.upsert({
     where: {
-      abbreviation_provinceId: {
+      name_provinceId: {
         provinceId: city.provinceId,
-        abbreviation: city.abbreviation
+        name: city.name
       }
     },
     create: {

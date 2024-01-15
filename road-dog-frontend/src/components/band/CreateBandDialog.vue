@@ -26,6 +26,9 @@
           single-line
           @update:search="searchCities"
         ></v-autocomplete>
+        <!-- <div class="d-flex w-100 align-middle text-center">
+          <font-awesome-icon icon="fa-spinner" class="loader"></font-awesome-icon>
+        </div> -->
 
         <v-btn type="submit" block class="bg-secondary text-white">Add</v-btn>
       </v-form>

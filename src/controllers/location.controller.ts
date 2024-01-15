@@ -55,7 +55,6 @@ export async function createCity(req: Request, res: Response) {
 
     const city = await locationService.createCity({
       name,
-      abbreviation,
       provinceId
     });
     return res.send(city);
