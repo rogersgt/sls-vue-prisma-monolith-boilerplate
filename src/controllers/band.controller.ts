@@ -65,3 +65,13 @@ export async function createBand(req: Request, res: Response) {
     return handleError(error as HttpError, res);
   }
 }
+
+export async function listBandsForUser(req: Request, res: Response) {
+  try {
+    const user = await getLoggedInUserOrThrow(req);
+    const bands = await bandService.listBandsUserIsMemberOf(user.id);
+    return res.send(bands);
+  } catch (error) {
+    return handleError(error as HttpError, res);
+  }
+}

@@ -173,6 +173,7 @@ model BandUser {
 
   role BandRole @default(MEMBER)
 
+  @@index([userId])
   @@index([bandId])
   @@map("band_user")
 }

@@ -75,3 +75,25 @@ export async function createBand(
     }
   })
 }
+
+export async function listBandsUserIsMemberOf(userId: string) {
+  const prisma = await getPrismaClient();
+  return prisma.band.findMany({
+    where: {
+      bandMembers: {
+        some: {
+          userId
+        }
+      }
+    },
+    include: {
+      genres: true,
+      bandMembers: {
+        include: {
+          user: true
+        }
+      },
+      city: true
+    }
+  })
+}
