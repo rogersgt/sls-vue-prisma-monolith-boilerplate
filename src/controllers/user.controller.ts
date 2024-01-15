@@ -15,7 +15,9 @@ export async function getUser(req: Request, res: Response) {
       // TODO: check permissions for users
     }
 
-    const responseUser = await userService.getUser(requestIsForSelf ? loggedInUser.id : requestedUserId, {});
+    const responseUser = await userService.getUser(requestIsForSelf ? loggedInUser.id : requestedUserId, {
+      bandMemberships: true
+    });
 
     return res.send(responseUser);
   } catch (error: unknown) {
