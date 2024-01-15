@@ -38,7 +38,7 @@ export class User {
   }
 }
 
-export class Province {
+export class Country {
   id: string;
   name: string;
   abbreviation: string;
@@ -47,10 +47,39 @@ export class Province {
     id,
     name,
     abbreviation
-  }: Partial<{ id: string; name: string; abbreviation: string }>) {
+  }: Partial<{
+    id: string;
+    name: string;
+    abbreviation: string;
+  }>) {
     this.id = id ?? '';
     this.name = name ?? '';
     this.abbreviation = abbreviation ?? '';
+  }
+ }
+
+export class Province {
+  id: string;
+  name: string;
+  abbreviation: string;
+  countryId: string;
+  country?: Country;
+
+  constructor({
+    id,
+    name,
+    abbreviation,
+    country,
+    countryId
+  }: Partial<{ id: string; name: string; abbreviation: string; countryId: string; country: Partial<Country> }>) {
+    this.id = id ?? '';
+    this.name = name ?? '';
+    this.abbreviation = abbreviation ?? '';
+    this.countryId = countryId ?? '';
+    this.country = new Country({
+      ...country,
+      id: country?.id ?? countryId ?? ''
+    })
   }
 }
 
