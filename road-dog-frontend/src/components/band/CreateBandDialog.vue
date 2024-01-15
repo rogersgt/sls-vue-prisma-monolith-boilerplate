@@ -7,7 +7,7 @@
     <v-sheet class="bg-grey">
       <v-form @submit="save">
         <v-text-field placeholder="Band Name" v-model="bandName"></v-text-field>
-        <v-select
+        <v-autocomplete
           v-model="bandState"
           :items="stateOptions"
           label="State/Provice"
@@ -15,7 +15,7 @@
           item-value="id"
           return-object
           single-line
-        ></v-select>
+        ></v-autocomplete>
 
         <v-btn type="submit" block class="bg-secondary text-white">Add</v-btn>
       </v-form>
