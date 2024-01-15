@@ -56,7 +56,8 @@ export async function createBand(req: Request, res: Response) {
     const createdBand = await bandService.createBand({
       cityId: bandInput.cityId ?? '',
       name: bandInput.name ?? '',
-      genres: bandInput.genres.map(({ id }) => ({ id }))
+      genres: bandInput.genres.map(({ id }) => ({ id })),
+      spotifyArtistId: bandInput.spotifyArtistId
     }, loggedInUser.id);
 
     return res.send(createdBand);

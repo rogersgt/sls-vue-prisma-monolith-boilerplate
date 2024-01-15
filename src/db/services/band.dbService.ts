@@ -44,7 +44,7 @@ export async function listBandsByCity(cityId: string, { skip = 0, take = API_PAG
 
 export async function createBand(
   // eslint-disable-next-line max-len
-  input: Pick<Band, 'name' | 'cityId'> & Partial<Pick<Band, 'founded' | 'instagramHandle' | 'websiteUrl'> & { genres: Pick<Genre, 'id'>[]}>,
+  input: Pick<Band, 'name' | 'cityId'> & Partial<Pick<Band, 'founded' | 'instagramHandle' | 'websiteUrl' | 'spotifyArtistId'> & { genres: Pick<Genre, 'id'>[]}>,
   ownerId?: string
 ) {
   const { genres, ...band } = input;

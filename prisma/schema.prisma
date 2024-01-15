@@ -149,9 +149,11 @@ model Band {
   genres Genre[]
   websiteUrl String? @map("website_url")
   instagramHandle String? @map("instagram_handle")
+  spotifyArtistId String? @map("spotify_artist_id")
 
   @@index([cityId])
   @@index([name])
+  @@index([cityId, name])
   @@map("band")
 }
 
