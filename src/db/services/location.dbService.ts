@@ -45,7 +45,8 @@ export async function searchCities(
   return prisma.city.findMany({
     where: {
       name: {
-        contains: nameQuery
+        contains: nameQuery,
+        mode: 'insensitive'
       },
       ...(provinceId && { provinceId })
     },

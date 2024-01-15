@@ -16,6 +16,16 @@
           return-object
           single-line
         ></v-autocomplete>
+        <v-autocomplete
+          v-model="bandCity"
+          :items="cityOptions"
+          label="City"
+          item-title="name"
+          item-value="id"
+          return-object
+          single-line
+          @update:search="searchCities"
+        ></v-autocomplete>
 
         <v-btn type="submit" block class="bg-secondary text-white">Add</v-btn>
       </v-form>
@@ -39,7 +49,8 @@ export default defineComponent({
     };
 
     const locationStore = useLocationStore();
-    const stateOptions = ref<Province[]>([])
+    const stateOptions = ref<Province[]>([]);
+    const cityOptions = ref<City[]>([]);
 
     const bandName = ref('');
     const bandCity = ref<City>();
@@ -53,14 +64,31 @@ export default defineComponent({
         console.error(error);
         // TODO: Show error toast
       }
-    })
+    });
+
+    const searchCities = async (cityName: string) => {
+      console.log('sdfasd')
+      if (!cityName) {
+        cityOptions.value = [];
+        return;
+      }
+      try {
+        console.log('SEARCHING CITIES')
+        cityOptions.value = await locationStore.searchCities(cityName, bandState.value ? bandState.value.id : undefined)
+      } catch (error) {
+        console.error(error);
+        // TODO: show error toast
+      }
+    };
 
     return {
       bandName,
       bandState,
       bandCity,
+      cityOptions,
       openDialog,
       save,
+      searchCities,
       stateOptions
     }
   }
