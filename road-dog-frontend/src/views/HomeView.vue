@@ -2,9 +2,13 @@
 import useBandStore from '@/stores/band.store';
 import { storeToRefs } from 'pinia';
 import { defineComponent } from 'vue';
+import CreateBandDialog from '@/components/band/CreateBandDialog.vue';
 
 export default defineComponent({
   name: 'HomeView',
+  components: {
+    CreateBandDialog
+  },
   setup() {
     const bandStore = useBandStore();
     const { loggedInUserBands$ } = storeToRefs(bandStore);
@@ -26,11 +30,12 @@ export default defineComponent({
       </v-list-item>
     </v-list>
 
-    <div v-if="!bands.length" class="d-block">
-      <p >You do not belong to any bands</p>
-      <v-btn class="bg-primary text-white pa-2" variant="elevated">
+    <div v-if="!bands.length" class="d-block mt-16">
+      <h3 class="my-2">You do not belong to any bands</h3>
+      <v-btn class="bg-primary text-white pa-2 my-2" variant="elevated">
         <font-awesome-icon icon="fa-plus"></font-awesome-icon>
         Add your band
+        <CreateBandDialog />
       </v-btn>
     </div>
   </v-sheet>

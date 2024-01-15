@@ -46,11 +46,11 @@ export async function createBand(req: Request, res: Response) {
     const loggedInUser = await getLoggedInUserOrThrow(req);
     const bandInput = req.body as Partial<Band> & { genres: Genre[] };
     if (!bandInput.cityId || !bandInput.name) {
-      return res.status(400).send('name and cityId are required for createBand');
+      throw new HttpError(400, 'name and cityId are required for createBand')
     }
 
     if (!bandInput.genres.every((genre) => !!genre.id)) {
-      return res.status(400).send('genre.id is required for creating a band');
+      throw new HttpError(400, 'genre.id is required for creating a band')
     }
 
     const createdBand = await bandService.createBand({

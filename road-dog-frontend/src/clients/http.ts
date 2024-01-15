@@ -5,11 +5,11 @@ const httpClient = axios.create({
   withCredentials: true,
 });
 
-httpClient.interceptors.response.use((response) => {
-  if (response.status === 401) {
-    // FIXME: redirect to login
-  }
-  return response;
-});
+// httpClient.interceptors.response.use((response) => {
+//   if (response.status === 401) {
+//     // FIXME: redirect to login
+//   }
+//   return response;
+// });
 
 export default httpClient;

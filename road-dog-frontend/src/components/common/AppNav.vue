@@ -5,8 +5,6 @@
     </v-btn>
     <h1 class="m-0 text-primary">Road Dog</h1>
   </v-app-bar>
-
-
 </template>
 
 <script lang="ts">

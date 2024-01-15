@@ -32,6 +32,35 @@ export async function listCitiesInProvince(provinceId: string, { skip = 0, take 
   })
 }
 
+export async function searchCities(
+  {
+    nameQuery,
+    provinceId
+  }: {
+    nameQuery: string,
+    provinceId?: string
+  }, { skip = 0, take = API_PAGE_SIZE }: ApiPagination
+) {
+  const prisma = await getPrismaClient();
+  return prisma.city.findMany({
+    where: {
+      name: {
+        contains: nameQuery
+      },
+      ...(provinceId && { provinceId })
+    },
+    skip,
+    take,
+    include: {
+      province: {
+        include: {
+          country: true
+        }
+      }
+    }
+  })
+}
+
 export async function createCity(city: Pick<City, 'abbreviation' | 'name' | 'provinceId'>) {
   const prisma = await getPrismaClient();
   return prisma.city.upsert({
