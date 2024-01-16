@@ -9,7 +9,7 @@
       </v-btn>
     </div>
     <img v-if="!loggedInUser$?.pictureUrl" class="w-50 profile-image rounded-circle" src="@/assets/default-profile-image.webp" alt="No image">
-    <img v-if="!!loggedInUser$?.pictureUrl" class="w-50 profile-image rounded-circle" :src="loggedInUser$.pictureUrl" :alt="loggedInUser$.firstName + ' ' + loggedInUser$.lastName">
+    <img referrerpolicy="no-referrer" v-if="!!loggedInUser$?.pictureUrl" class="w-50 profile-image rounded-circle" :src="loggedInUser$.pictureUrl" :alt="loggedInUser$.firstName + ' ' + loggedInUser$.lastName">
     <h2>{{ loggedInUser$?.firstName }} {{ loggedInUser$?.lastName }}</h2>
 
     <p class="flex align-middle"><font-awesome-icon icon="fa-envelope"></font-awesome-icon> {{ loggedInUser$?.email }}</p>
@@ -22,6 +22,7 @@ import { defineComponent } from 'vue';
 import useNavStore from '@/stores/nav.store';
 import { storeToRefs } from 'pinia';
 import useUserStore from '@/stores/user.store';
+import { watch } from 'vue';
 
 export default defineComponent({
   name: 'ProfileSidePanel',
@@ -33,6 +34,10 @@ export default defineComponent({
 
     const userStore = useUserStore();
     const { loggedInUser$ } = storeToRefs(userStore);
+
+    watch(() => loggedInUser$.value, (user) => {
+      console.log(user)
+    })
 
     return {
       sidePanelOpen,
