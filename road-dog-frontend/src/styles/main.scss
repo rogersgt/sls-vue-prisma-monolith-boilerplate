@@ -8,3 +8,9 @@
 .loader {
   animation: spin 2s linear infinite;
 }
+
+.clickable {
+  &:hover {
+    cursor: pointer;
+  }
+}

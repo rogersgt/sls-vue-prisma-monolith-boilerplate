@@ -44,13 +44,13 @@ export default defineComponent({
       <div class="w-100 m-0 p-0">
         <band-card :class="{
           'w-50 mx-auto mt-2': true,
-          'w-100': $vuetify.display.md || $vuetify.display.sm || $vuetify.display.xs
+          'w-100': $vuetify.display.mdAndDown
         }" v-for="band in bands" :key="band.id" :band-id="band.id"></band-card>
 
         <v-skeleton-loader
           :class="{
             'w-50 mx-auto mt-2': true,
-            'w-100': $vuetify.display.md || $vuetify.display.sm || $vuetify.display.xs
+            'w-100': $vuetify.display.mdAndDown
           }"
           type="card"
           loading

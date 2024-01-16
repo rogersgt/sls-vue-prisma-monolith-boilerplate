@@ -17,7 +17,7 @@ import {
   faX,
   faEnvelope,
   faPlus,
-  
+  faArrowUpRightFromSquare
 } from '@fortawesome/free-solid-svg-icons'
 
 /* -- Vuetify -- */
@@ -32,7 +32,7 @@ import router from './router'
 
 const app = createApp(App)
 
-library.add(faG, faCircleNotch, faSpinner, faBars, faX, faEnvelope, faPlus)
+library.add(faG, faCircleNotch, faSpinner, faBars, faX, faEnvelope, faPlus, faArrowUpRightFromSquare)
 
 const vuetify = createVuetify({
   components,
@@ -51,19 +51,28 @@ const vuetify = createVuetify({
     defaultTheme: 'custom',    
     themes: {
       custom: {
-        dark: false,
-        // colors: {
-        //   background: '#FFFFFF',
-        //   surface: '#FFFFFF',
-        //   primary: '#6200EE',
-        //   'primary-darken-1': '#3700B3',
-        //   secondary: '#03DAC6',
-        //   'secondary-darken-1': '#018786',
-        //   error: '#B00020',
-        //   info: '#2196F3',
-        //   success: '#4CAF50',
-        //   warning: '#FB8C00',
-        // },
+        dark: true,
+        colors: {
+          background: '#cbced1',
+          surface: '#FFFFFF',
+          primary: '#004bb3',
+          'primary-darken-1': '#02429c',
+          'primary-darken-2': '#003887',
+          'primary-darken-3': '#013073',
+          'primary-darken-4': '#012457',
+          secondary: '#7212e0',
+          'secondary-darken-1': '#600dbf',
+          error: '#8a0f1d',
+          info: '#00aab3',
+          success: '#2fad33',
+          warning: '#ada52f',
+          grey: '#818a84',
+          'grey-darken-1': '#7a7d7b',
+          'grey-darken-2': '#646665',
+          'grey-darken-3': '#4e4f4f',
+          'grey-darken-4': '#2d2e2e',
+          'black': '#000000'
+        },
       }
     }
   }
