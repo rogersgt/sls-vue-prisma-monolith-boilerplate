@@ -19,7 +19,8 @@ import {
   faX,
   faEnvelope,
   faPlus,
-  faArrowUpRightFromSquare
+  faArrowUpRightFromSquare,
+  faEllipsisVertical
 } from '@fortawesome/free-solid-svg-icons'
 
 /* -- Vuetify -- */
@@ -34,7 +35,17 @@ import router from './router'
 
 const app = createApp(App)
 
-library.add(faG, faCircleNotch, faSpinner, faBars, faX, faEnvelope, faPlus, faArrowUpRightFromSquare)
+library.add(
+  faG,
+  faCircleNotch,
+  faSpinner,
+  faBars,
+  faX,
+  faEnvelope,
+  faPlus,
+  faArrowUpRightFromSquare,
+  faEllipsisVertical
+)
 
 const vuetify = createVuetify({
   components,

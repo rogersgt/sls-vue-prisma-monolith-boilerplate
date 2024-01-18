@@ -23,6 +23,22 @@ const useBandStore = defineStore('BandStore', () => {
 
   const receiveBands = (BandUpdates: Band[]) => {
     const newBands = BandUpdates.reduce((prev, curr) => {
+      const existingMemberships = bandCache.value[curr.id]?.bandMemberShips ?? [];
+      const allExistingMemberships = existingMemberships.concat(curr.bandMemberShips).reduce((prev, curr) => {
+        const existingMembershipIndx = existingMemberships.findIndex(({ userId, bandId }) => curr.bandId === bandId && curr.userId === userId);
+        if (existingMembershipIndx === -1) {
+          return prev.concat(curr);
+        }
+        // TODO: can override users here, but not sure how inceptiony we want to get
+        const mergedMembership = new BandMembership({
+          ...existingMemberships[existingMembershipIndx],
+          ...curr
+        })
+
+        prev.splice(existingMembershipIndx, 1, mergedMembership);
+        return prev;
+      }, [] as BandMembership[])
+
       const users = curr.bandMemberShips.reduce((prev, curr) => {
         if (curr.user) return prev.concat([curr.user])
         return prev;
@@ -36,6 +52,7 @@ const useBandStore = defineStore('BandStore', () => {
         [curr.id]: {
           ...existingCache,
           ...curr,
+          bandMemberShips: allExistingMemberships
         }
       }
     }, {} as { [id: string]: Band});
@@ -98,9 +115,23 @@ const useBandStore = defineStore('BandStore', () => {
     })
   };
 
+  const deleteBand = async (bandId: string) => {
+    await bandService.deleteBand(bandId);
+    const bandIds = Object.keys(bandCache.value);
+    bandCache.value = bandIds.reduce((prev, curr) => {
+      return {
+        ...prev,
+        ...(curr !== bandId && {
+          [curr]: bandCache.value[curr]
+        })
+      }
+    }, {} as { [id: string]: Band });
+  }
+
   return {
     bandCache,
     createMyBand,
+    deleteBand,
     getBandMembers,
     loggedInUserBands$,
     getBandById,

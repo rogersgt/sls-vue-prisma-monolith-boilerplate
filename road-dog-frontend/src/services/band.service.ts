@@ -33,3 +33,7 @@ export async function listBandsForLoggedInUser() {
   } = await httpClient.get('/band');
   return data.map((b) => new Band({ ...b }));
 }
+
+export async function deleteBand(id: string) {
+  await httpClient.delete(`/band/${id}`);
+}

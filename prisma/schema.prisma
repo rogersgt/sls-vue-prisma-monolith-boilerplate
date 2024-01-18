@@ -169,7 +169,7 @@ model BandUser {
   user User @relation("band_user_user_id", fields: [userId], references: [id])
 
   bandId String @map("band_id")
-  band Band @relation("band_user_band_id", fields: [bandId], references: [id])
+  band Band @relation("band_user_band_id", fields: [bandId], references: [id], onDelete: Cascade)
 
   role BandRole @default(MEMBER)
 

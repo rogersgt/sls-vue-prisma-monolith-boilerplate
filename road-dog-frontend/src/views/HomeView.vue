@@ -6,6 +6,7 @@ import CreateBandDialog from '@/components/band/CreateBandDialog.vue';
 import BandCard from '@/components/band/BandCard.vue';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
+import useUserStore from '@/stores/user.store';
 
 export default defineComponent({
   name: 'HomeView',
@@ -14,6 +15,8 @@ export default defineComponent({
     CreateBandDialog
   },
   setup() {
+    const userStore = useUserStore();
+    const { loggedInUser$ } = storeToRefs(userStore);
     const isLoading = ref<boolean>(false);
     const bandStore = useBandStore();
     const { loggedInUserBands$ } = storeToRefs(bandStore);
@@ -32,7 +35,8 @@ export default defineComponent({
 
     return {
       bands: loggedInUserBands$,
-      isLoading
+      isLoading,
+      loggedInUser$
     }
   }
 })
@@ -42,7 +46,7 @@ export default defineComponent({
   <v-sheet :min-height="600" :elevation="22" class="d-flex justify-center text-center bg-grey w-100">
     <v-container>
       <div class="d-flex mx-0 my-3 p-0 w-100 justify-center">
-        <v-btn color="primary">
+        <v-btn color="primary" v-if="!isLoading">
           <font-awesome-icon icon="fa-plus"></font-awesome-icon>
           Add band
           <CreateBandDialog />
@@ -53,7 +57,8 @@ export default defineComponent({
         <band-card :class="{
           'w-50 mx-auto mt-2': true,
           'w-100': $vuetify.display.mdAndDown
-        }" v-for="band in bands" :key="band.id" :band-id="band.id"></band-card>
+          // FIXME: use roles and permissions here
+        }" v-for="band in bands" :key="band.id" :band-id="band.id" :show-delete-option="true"></band-card>
 
         <v-skeleton-loader
           :class="{
