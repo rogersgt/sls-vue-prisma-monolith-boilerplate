@@ -49,7 +49,7 @@ export default defineComponent({
         </v-btn>
       </div>
 
-      <div class="w-100 m-0 p-0">
+      <div v-if="!isLoading" class="w-100 m-0 p-0">
         <band-card :class="{
           'w-50 mx-auto mt-2': true,
           'w-100': $vuetify.display.mdAndDown

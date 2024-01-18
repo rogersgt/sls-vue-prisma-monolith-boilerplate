@@ -124,6 +124,7 @@ export class Band {
   founded?: Date;
   spotifyArtistId?: string;
   bandMemberShips: BandMembership[];
+  
 
   constructor({
     id,

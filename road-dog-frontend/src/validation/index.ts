@@ -9,12 +9,15 @@ export const stringMinChars = (length: number) => (val: string) => {
 }
 
 export const mustBeValidUrl = (value: string) => {
+  if (!value) return true;
+  
   if (!value.startsWith('http://') && !value.startsWith('https://')) return false;
   // TODO: more matching
   return true;
 }
 
 export const mustNotBeUrl = (value: string) => {
+  if (!value) return true;
   if (value.startsWith('http://') || value.startsWith('https://')) return false;
   // TODO: more matching
   return true;

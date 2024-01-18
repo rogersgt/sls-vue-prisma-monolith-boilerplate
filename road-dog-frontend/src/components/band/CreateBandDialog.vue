@@ -64,7 +64,6 @@
           v-model="bandWebsiteUrl"
           :rules="bandWebsiteUrlValidation"
         ></v-text-field>
-
         <v-btn :disabled="!bandName.length || !bandCity?.id" type="submit" block class="bg-secondary text-white">Add</v-btn>
       </v-form>
     </v-sheet>
@@ -103,6 +102,7 @@ export default defineComponent({
     const bandIGHandle = ref<string>();
     const bandSpotifyArtistId = ref<string>();
     const bandWebsiteUrl = ref<string>();
+    // const bandFoundedDate = ref<Date>();
 
     onMounted(async () => {
       try {
@@ -141,7 +141,10 @@ export default defineComponent({
         await bandStore.createMyBand(new Band({
           name: bandName.value,
           cityId: bandCity.value.id,
-          genres: bandGenres.value
+          genres: bandGenres.value,
+          websiteUrl: bandWebsiteUrl.value,
+          spotifyArtistId: bandSpotifyArtistId.value,
+          instagramHandle: bandIGHandle.value
         }));
         openDialog.value = false;
       } catch (error) {
@@ -199,6 +202,7 @@ export default defineComponent({
       bandIGHandle,
       bandSpotifyArtistId,
       bandWebsiteUrl,
+      // bandFoundedDate,
       cityOptions,
       genreOptions,
       openDialog,
