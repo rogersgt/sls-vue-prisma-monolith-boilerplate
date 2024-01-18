@@ -83,8 +83,10 @@ const vuetify = createVuetify({
 const pinia = createPinia()
 // pinia.use(PersistedState)
 app.use(pinia)
-pinia.use(PiniaColadaPlugin);
-app.use(Colada);
+if (import.meta.env.VITE_NODE_ENV !== 'production') {
+  pinia.use(PiniaColadaPlugin);
+  app.use(Colada);
+}
 app.use(router)
 app.use(vuetify)
 app.use(vue3GoogleLogin, {
