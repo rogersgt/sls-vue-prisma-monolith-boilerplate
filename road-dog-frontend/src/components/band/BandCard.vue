@@ -1,7 +1,8 @@
 <template>
   <v-card class="band-card">
-    <v-card-title @click="goToBandView()" class="text-primary-darken-2 clickable">
+    <v-card-title @click="goToBandView()" class="d-flex text-primary-darken-2 clickable justify-center ga-2">
       <h3>{{ band$?.name?.toLocaleUpperCase() }}</h3>
+      <h6 class="">view <font-awesome-icon icon="fa-arrow-up-right-from-square"></font-awesome-icon></h6>
     </v-card-title>
     <v-card-subtitle>
       <div class="justify-center">

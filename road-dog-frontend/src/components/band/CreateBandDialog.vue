@@ -7,6 +7,8 @@
     v-model="openDialog"
   >
     <v-sheet class="bg-grey-darken-4">
+      <h1 class="p-1 w-100 m-0 text-center">Add Band</h1>
+
       <v-form @submit="save">
         <!-- name -->
         <v-text-field :rules="bandNameValidation" placeholder="Band Name" v-model="bandName"></v-text-field>
@@ -44,6 +46,24 @@
           multiple
           return-object
         ></v-autocomplete>
+        <!-- IG -->
+        <v-text-field
+          placeholder="Instagram Handle"
+          v-model="bandIGHandle"
+          :rules="bandIGHandleValidation"
+        ></v-text-field>
+        <!-- spotify -->
+        <v-text-field
+          placeholder="Spotify Artist ID"
+          v-model="bandSpotifyArtistId"
+          :rules="bandSpotifyArtistIdValidation"
+        ></v-text-field>
+        <!-- website -->
+        <v-text-field
+          placeholder="Website URL"
+          v-model="bandWebsiteUrl"
+          :rules="bandWebsiteUrlValidation"
+        ></v-text-field>
 
         <v-btn :disabled="!bandName.length || !bandCity?.id" type="submit" block class="bg-secondary text-white">Add</v-btn>
       </v-form>
@@ -58,7 +78,7 @@ import { onMounted } from 'vue';
 import useLocationStore from '@/stores/location.store';
 import useBandStore from '@/stores/band.store';
 import useGenreStore from '@/stores/genre.store';
-import { stringMinChars, valueRequired } from '@/validation';
+import { stringMinChars, valueRequired, mustBeValidUrl, mustNotBeUrl } from '@/validation';
 import { watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
@@ -80,6 +100,9 @@ export default defineComponent({
     const bandCity = ref<City>();
     const bandState = ref<Province>();
     const bandGenres = ref<Genre[]>([]);
+    const bandIGHandle = ref<string>();
+    const bandSpotifyArtistId = ref<string>();
+    const bandWebsiteUrl = ref<string>();
 
     onMounted(async () => {
       try {
@@ -115,7 +138,6 @@ export default defineComponent({
       e.preventDefault();
       if (!bandCity.value || !bandName.value) return;
       try {
-        console.log(bandGenres.value)
         await bandStore.createMyBand(new Band({
           name: bandName.value,
           cityId: bandCity.value.id,
@@ -130,6 +152,29 @@ export default defineComponent({
 
     const bandNameValidation = [valueRequired];
     const bandCityValidation = [valueRequired, stringMinChars(4)];
+    const bandWebsiteUrlValidation = [mustBeValidUrl];
+    const bandSpotifyArtistIdValidation = [
+      mustNotBeUrl,
+      // async (value: string) => {
+      //   try {
+      //     await axios.get(`https://open.spotify.com/artist/${value}`);
+      //     return true;
+      //   } catch (error) {
+      //     return false;
+      //   }
+      // }
+    ];
+    const bandIGHandleValidation = [
+    mustNotBeUrl,
+    // async (value: string) => {
+    //   try {
+    //     await axios.get(`https://www.instagram.com/${value}`);
+    //     return true;
+    //   } catch (error) {
+    //     return false;
+    //   }
+    // }
+  ];
 
     watch(() => bandState.value, (val, oldVal) => {
       if (val?.id !== oldVal?.id) {
@@ -145,9 +190,15 @@ export default defineComponent({
       bandName,
       bandNameValidation,
       bandCityValidation,
+      bandWebsiteUrlValidation,
+      bandSpotifyArtistIdValidation,
+      bandIGHandleValidation,
       bandCity,
       bandGenres,
       bandState,
+      bandIGHandle,
+      bandSpotifyArtistId,
+      bandWebsiteUrl,
       cityOptions,
       genreOptions,
       openDialog,

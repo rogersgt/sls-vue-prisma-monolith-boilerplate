@@ -41,6 +41,14 @@ export default defineComponent({
 <template>
   <v-sheet :min-height="600" :elevation="22" class="d-flex justify-center text-center bg-grey w-100">
     <v-container>
+      <div class="d-flex mx-0 my-3 p-0 w-100 justify-center">
+        <v-btn color="primary">
+          <font-awesome-icon icon="fa-plus"></font-awesome-icon>
+          Add band
+          <CreateBandDialog />
+        </v-btn>
+      </div>
+
       <div class="w-100 m-0 p-0">
         <band-card :class="{
           'w-50 mx-auto mt-2': true,
