@@ -1,4 +1,6 @@
-export class User {
+export class BaseEntityClass {}
+
+export class User extends BaseEntityClass {
   id: string;
   firstName: string;
   lastName: string;
@@ -27,6 +29,7 @@ export class User {
     googleUserId: string;
     bandMemberships: Partial<BandMembership>[];
   }>) {
+    super();
     this.id = id ?? '';
     this.email = email ?? '';
     this.firstName = firstName ?? '';
@@ -38,7 +41,7 @@ export class User {
   }
 }
 
-export class Country {
+export class Country extends BaseEntityClass {
   id: string;
   name: string;
   abbreviation: string;
@@ -52,13 +55,14 @@ export class Country {
     name: string;
     abbreviation: string;
   }>) {
+    super();
     this.id = id ?? '';
     this.name = name ?? '';
     this.abbreviation = abbreviation ?? '';
   }
  }
 
-export class Province {
+export class Province extends BaseEntityClass {
   id: string;
   name: string;
   abbreviation: string;
@@ -72,6 +76,7 @@ export class Province {
     country,
     countryId
   }: Partial<{ id: string; name: string; abbreviation: string; countryId: string; country: Partial<Country> }>) {
+    super();
     this.id = id ?? '';
     this.name = name ?? '';
     this.abbreviation = abbreviation ?? '';
@@ -83,7 +88,7 @@ export class Province {
   }
 }
 
-export class City {
+export class City extends BaseEntityClass {
   id: string;
   name: string;
   abbreviation: string;
@@ -102,6 +107,7 @@ export class City {
     provinceId: string;
     province: Partial<Province>;
   }>) {
+    super();
     this.id = id ?? '';
     this.name = name ?? '';
     this.abbreviation = abbreviation ?? '';
@@ -113,7 +119,7 @@ export class City {
   }
 }
 
-export class Band {
+export class Band extends BaseEntityClass {
   id: string;
   name: string;
   cityId: string;
@@ -149,6 +155,7 @@ export class Band {
     spotifyArtistId: string;
     bandMemberships: BandMembership[];
   }>) {
+    super();
     this.id = id ?? '';
     this.name = name ?? '';
     this.cityId = cityId ?? ''; 
@@ -171,7 +178,7 @@ export class Band {
 
 export type BandMembershipRole = 'owner' | 'member';
 
-export class BandMembership {
+export class BandMembership extends BaseEntityClass {
   id: string;
   bandId: string;
   band?: Band;
@@ -187,6 +194,7 @@ export class BandMembership {
     user,
     role
   }: Partial<{ id: string; bandId: string; band: Partial<Band>; userId: string; user: Partial<User>; role: BandMembershipRole }>) {
+    super();
     this.id = id ?? '';
     this.bandId = bandId ?? '';
     this.userId = userId ?? '';
@@ -202,11 +210,12 @@ export class BandMembership {
   }
 }
 
-export class Genre {
+export class Genre extends BaseEntityClass {
   id: string;
   name: string;
 
   constructor({ id, name }: Partial<{ id: string; name: string }>) {
+    super();
     this.id = id ?? '';
     this.name = name ?? '';
   }
