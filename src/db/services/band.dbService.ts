@@ -97,3 +97,12 @@ export async function listBandsUserIsMemberOf(userId: string) {
     }
   })
 }
+
+export async function deleteBand(bandId: string) {
+  const prisma = await getPrismaClient();
+  return prisma.band.delete({
+    where: {
+      id: bandId
+    }
+  })
+}

@@ -75,3 +75,22 @@ export async function listBandsForUser(req: Request, res: Response) {
     return handleError(error as HttpError, res);
   }
 }
+
+export async function deleteBand(req: Request, res: Response) {
+  try {
+    const { bandId } = req.params;
+    if (!bandId || typeof bandId !== 'string') {
+      throw new HttpError(400, 'bandId must be a string');
+    }
+    const user = await getLoggedInUserOrThrow(req);
+    const band = await bandService.getBand(bandId);
+    if (!band?.bandMembers.find(({ userId }) => userId === user.id)) {
+      // TODO: implement roles and permissions
+      throw new HttpError(404, 'not found');
+    }
+    await bandService.deleteBand(bandId);
+    return res.status(204).send();
+  } catch (error) {
+    return handleError(error as HttpError, res);
+  }
+}
