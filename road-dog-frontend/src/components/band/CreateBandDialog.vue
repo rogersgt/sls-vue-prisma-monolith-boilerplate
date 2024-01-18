@@ -11,9 +11,12 @@
 
       <v-form @submit="save">
         <!-- name -->
-        <v-text-field :rules="bandNameValidation" placeholder="Band Name" v-model="bandName"></v-text-field>
+        <label for="bandName" class="ml-4">Name</label>
+        <v-text-field id="bandName" :rules="bandNameValidation" placeholder="Band Name" v-model="bandName"></v-text-field>
         <!-- state/province -->
+        <label class="ml-4" for="bandState">State/Province</label>
         <v-autocomplete
+          id="bandState"
           v-model="bandState"
           :items="stateOptions"
           label="Select State"
@@ -23,7 +26,9 @@
           single-line
         ></v-autocomplete>
         <!-- city -->
+        <label for="bandCity" class="ml-4">{{ !bandState?.id ? 'Select state first' : 'City' }}</label>
         <v-autocomplete
+          id="bandCity"
           v-model="bandCity"
           :rules="bandCityValidation"
           :items="cityOptions"
@@ -36,7 +41,9 @@
           :disabled="!bandState"
         ></v-autocomplete>
         <!-- genres -->
+        <label class="ml-4" for="bandGenres">Genres <span class="text-grey-lighten-1">(optional)</span></label>
         <v-autocomplete
+          id="bandGenres"
           v-model="bandGenres"
           :items="genreOptions"
           label="Select Genres"
@@ -47,24 +54,32 @@
           return-object
         ></v-autocomplete>
         <!-- IG -->
+        <label class="ml-4" for="bandIGHandle">Instagram <span class="text-grey-lighten-1">(optional)</span></label>
         <v-text-field
+          id="bandIGHandle"
           placeholder="Instagram Handle"
           v-model="bandIGHandle"
           :rules="bandIGHandleValidation"
         ></v-text-field>
         <!-- spotify -->
+        <label class="ml-4" for="bandSpotify">Spotify <span class="text-grey-lighten-1">(optional)</span></label>
         <v-text-field
+          id="bandSpotify"
           placeholder="Spotify Artist ID"
           v-model="bandSpotifyArtistId"
           :rules="bandSpotifyArtistIdValidation"
         ></v-text-field>
         <!-- website -->
+        <label class="ml-4" for="bandWebsite">Website <span class="text-grey-lighten-1">(optional)</span></label>
         <v-text-field
+          id="bandWebsite"
           placeholder="Website URL"
           v-model="bandWebsiteUrl"
           :rules="bandWebsiteUrlValidation"
         ></v-text-field>
-        <v-btn :disabled="!bandName.length || !bandCity?.id" type="submit" block class="bg-secondary text-white">Add</v-btn>
+
+        <p v-if="errorMessage" class="text-white bg-error p-4 text-center w-100 mx-0 my-1">{{ errorMessage }}</p>
+        <v-btn type="submit" block class="bg-secondary text-white">Add</v-btn>
       </v-form>
     </v-sheet>
   </v-dialog>
@@ -104,6 +119,8 @@ export default defineComponent({
     const bandWebsiteUrl = ref<string>();
     // const bandFoundedDate = ref<Date>();
 
+    const errorMessage = ref<string>();
+
     onMounted(async () => {
       try {
         const [states] = await Promise.all([locationStore.fetchStates(), genreStore.fetchGenres()]);
@@ -129,14 +146,31 @@ export default defineComponent({
         } catch (error) {
           console.error(error);
           // TODO: show error toast
+          errorMessage.value = 'There was an error searching cities';
         }
         searchCitiesPid.value = 0;
       }, 500);
     };
 
+    watch(() => bandName.value, (name, oldName) => {
+      if (name && name !== oldName) {
+        errorMessage.value = '';
+      }
+    });
+
+    watch(() => bandCity.value, (city, oldCity) => {
+      if (city && city.id !== oldCity?.id) {
+        errorMessage.value = '';
+      }
+    })
+
     const save = async (e: Event) => {
       e.preventDefault();
-      if (!bandCity.value || !bandName.value) return;
+      if (!bandCity.value || !bandName.value) {
+        errorMessage.value = 'Band name, state, and city are required';
+        return;
+      }
+
       try {
         await bandStore.createMyBand(new Band({
           name: bandName.value,
@@ -202,6 +236,7 @@ export default defineComponent({
       bandIGHandle,
       bandSpotifyArtistId,
       bandWebsiteUrl,
+      errorMessage,
       // bandFoundedDate,
       cityOptions,
       genreOptions,

@@ -1,4 +1,4 @@
-import { BandMembership, type Band, type User } from '@/types/core';
+import { BandMembership, type Band, User } from '@/types/core';
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import useUserStore from './user.store';
@@ -60,6 +60,15 @@ const useBandStore = defineStore('BandStore', () => {
       cityId,
       genres
     });
+    const existingUserBands = loggedInUser$.value?.bandMemberships ?? [];
+    userStore.receiveUsers([new User({
+      ...loggedInUser$.value,
+      bandMemberships: existingUserBands.concat([new BandMembership({
+        bandId: band.id,
+        band,
+        userId: loggedInUser$.value?.id
+      })])
+    })])
     receiveBands([band]);
     return band;
   };
