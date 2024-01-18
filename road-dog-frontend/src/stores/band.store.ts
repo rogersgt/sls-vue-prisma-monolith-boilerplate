@@ -1,4 +1,4 @@
-import { BandMembership, type Band, User } from '@/types/core';
+import { BandMembership, Band, User } from '@/types/core';
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import useUserStore from './user.store';
@@ -54,13 +54,18 @@ const useBandStore = defineStore('BandStore', () => {
   };
 
   const createMyBand = async ({ name, cityId, genres = [] }: Band) => {
-    console.log(genres)
     const band = await bandService.createBand({
       name,
       cityId,
       genres
     });
-    const existingUserBands = loggedInUser$.value?.bandMemberships ?? [];
+    const existingUserBands = (loggedInUser$.value?.bandMemberships ?? []).map((membership) => {
+      const cachedBand = bandCache.value[membership.bandId];
+      return new BandMembership({
+        ...membership,
+        band: cachedBand,
+      })
+    });
     userStore.receiveUsers([new User({
       ...loggedInUser$.value,
       bandMemberships: existingUserBands.concat([new BandMembership({
@@ -94,6 +99,7 @@ const useBandStore = defineStore('BandStore', () => {
   };
 
   return {
+    bandCache,
     createMyBand,
     getBandMembers,
     loggedInUserBands$,

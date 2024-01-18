@@ -42,6 +42,7 @@ const useGenreStore = defineStore('GenreStore', () => {
   return {
     allGenres$,
     getGenreById,
+    genreCache,
     receiveGenres,
     fetchGenres
   };

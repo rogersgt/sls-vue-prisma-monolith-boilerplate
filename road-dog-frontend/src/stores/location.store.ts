@@ -63,7 +63,8 @@ const useLocationStore = defineStore('LocationStore', () => {
     receiveStates,
     fetchStates,
     listStates,
-    searchCities
+    searchCities,
+    statesCache
   };
 });
 

@@ -63,7 +63,8 @@ const useUserStore = defineStore('UserStore', () => {
     fetchLoggedInUser,
     loggedInUser$,
     setLoggedInUser,
-    receiveUsers
+    receiveUsers,
+    userCache
   };
 })
 
