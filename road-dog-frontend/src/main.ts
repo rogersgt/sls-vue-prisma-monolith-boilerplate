@@ -3,7 +3,9 @@ import './styles/main.scss'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import vue3GoogleLogin from 'vue3-google-login'
-import PersistedState from 'pinia-plugin-persistedstate';
+// import PersistedState from 'pinia-plugin-persistedstate';
+// @ts-expect-error cannot find types?
+import Colada, { PiniaColadaPlugin } from 'colada-plugin';
 
 /* -- font awesome -- */
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -79,8 +81,10 @@ const vuetify = createVuetify({
 })
 
 const pinia = createPinia()
-pinia.use(PersistedState)
+// pinia.use(PersistedState)
 app.use(pinia)
+pinia.use(PiniaColadaPlugin);
+app.use(Colada);
 app.use(router)
 app.use(vuetify)
 app.use(vue3GoogleLogin, {
