@@ -94,3 +94,47 @@ export async function deleteBand(req: Request, res: Response) {
     return handleError(error as HttpError, res);
   }
 }
+
+export async function getBand(req: Request, res: Response) {
+  try {
+    const bandId = req.params.bandId;
+    if (!bandId) {
+      throw new HttpError(400, 'bandId required');
+    }
+
+    // const user = await getLoggedInUserOrThrow(req);
+    const band = await bandService.getBandCustomInclude(bandId, {
+      bandMembers: {
+        include: {
+          user: true
+        }
+      },
+      city: {
+        include: {
+          province: true
+        }
+      },
+      _count: {
+        select: {
+          /* upcoming shows */
+          showsPlaying: {
+            where: {
+              date: {
+                gte: new Date()
+              }
+            },
+            
+          }
+        }
+      }
+    });
+
+    if (!band) {
+      throw new HttpError(404, 'Band not found');
+    }
+    
+    return res.send(band);
+  } catch (error) {
+    return handleError(error as HttpError, res);
+  }
+}

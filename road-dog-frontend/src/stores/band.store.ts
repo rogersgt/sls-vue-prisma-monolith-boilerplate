@@ -126,12 +126,17 @@ const useBandStore = defineStore('BandStore', () => {
         })
       }
     }, {} as { [id: string]: Band });
-  }
+  };
+
+  const fetchBand = async (bandId: string) => {
+    await bandService.getBandById(bandId);
+  };
 
   return {
     bandCache,
     createMyBand,
     deleteBand,
+    fetchBand,
     getBandMembers,
     loggedInUserBands$,
     getBandById,

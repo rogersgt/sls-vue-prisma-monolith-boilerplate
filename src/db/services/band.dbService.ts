@@ -1,4 +1,4 @@
-import { Band, Genre } from '@prisma/client';
+import { Band, Genre, Prisma } from '@prisma/client';
 import { API_PAGE_SIZE } from '../../constants';
 import { ApiPagination } from '../../types/api';
 import getPrismaClient from '../client';
@@ -104,5 +104,15 @@ export async function deleteBand(bandId: string) {
     where: {
       id: bandId
     }
+  })
+}
+
+export async function getBandCustomInclude<T extends Prisma.Subset<Prisma.BandInclude, T>>(bandId: string, include: T) {
+  const prisma = await getPrismaClient();
+  return prisma.band.findUnique({
+    where: {
+      id: bandId,
+    },
+    include,
   })
 }

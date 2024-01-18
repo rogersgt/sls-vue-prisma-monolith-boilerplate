@@ -37,3 +37,14 @@ export async function listBandsForLoggedInUser() {
 export async function deleteBand(id: string) {
   await httpClient.delete(`/band/${id}`);
 }
+
+export async function getBandById(bandId: string) {
+  const {
+    data
+  }: {
+    data: Band
+  } = await httpClient.get(`/band/${bandId}`);
+  return new Band({
+    ...data
+  })
+}

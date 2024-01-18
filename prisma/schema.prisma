@@ -190,5 +190,7 @@ model Show {
   venueId String @map("venue_id")
   venue Venue @relation("show_venue_id", fields: [venueId], references: [id])
 
+  date DateTime @db.Date
+
   @@map("show")
 }
