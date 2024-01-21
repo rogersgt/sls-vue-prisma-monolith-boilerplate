@@ -129,7 +129,8 @@ const useBandStore = defineStore('BandStore', () => {
   };
 
   const fetchBand = async (bandId: string) => {
-    await bandService.getBandById(bandId);
+    const band = await bandService.getBandById(bandId);
+    receiveBands([band]);
   };
 
   return {
