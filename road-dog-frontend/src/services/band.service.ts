@@ -54,7 +54,7 @@ export async function updateBand(band: Band) {
     data
   }: {
     data: Band
-  } = await httpClient.put(`/band/${band.id}`);
+  } = await httpClient.put(`/band/${band.id}`, band);
   return new Band({
     ...data
   })

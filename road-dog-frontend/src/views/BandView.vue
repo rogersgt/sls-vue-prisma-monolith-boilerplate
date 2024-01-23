@@ -21,15 +21,15 @@
                 <h2>Music</h2>
               </v-expansion-panel-title>
               <v-expansion-panel-text>
+                <iframe v-if="band$?.spotifyArtistId" :src="`https://open.spotify.com/embed/artist/${band$.spotifyArtistId}?utm_source=generator`" width="100%" height="352" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <v-btn v-if="!editMode" @click="editMode = !editMode" color="secondary" class="my-2">Edit</v-btn>
                 <div class="d-block p-0 my-2">
                   <v-text-field id="spotifyArtistId" placeholder="Spotify Artist ID" v-if="editMode" v-model="bandSpotifyArtistId"></v-text-field>
-                  <label for="spotifyArtistId">Can be found at the end of the url copied from the artist page under "Share"</label>
+                  <label v-if="editMode" for="spotifyArtistId">Can be found at the end of the url copied from the artist page under "Share"</label>
                   <!-- FIXME: hide edit button if no permissions -->
                 </div>
-                  <v-btn color="primary" v-if="editMode">Save</v-btn>
-                  <v-btn @click="editMode = !editMode" color="gray" v-if="editMode">Cancel</v-btn>
-                  <v-btn v-if="!editMode" @click="editMode = !editMode" color="secondary">Edit</v-btn>
-                <iframe v-if="band$?.spotifyArtistId" :src="`https://open.spotify.com/embed/artist/${band$.spotifyArtistId}?utm_source=generator`" width="100%" height="352" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <v-btn color="primary" v-if="editMode" @click="save($event)" class="my-2">Save</v-btn>
+                <v-btn @click="editMode = !editMode" color="gray" v-if="editMode" class="my-2">Cancel</v-btn>
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
@@ -68,6 +68,7 @@ import { useRoute } from 'vue-router';
 import BandLinks from '@/components/band/BandLinks.vue';
 import BandCalendar from '@/components/band/BandCalendar.vue';
 import { watch } from 'vue';
+import { Band } from '@/types/core';
 
 export default defineComponent({
   name: 'BandView',
@@ -93,7 +94,15 @@ export default defineComponent({
 
     const editMode = ref<boolean>(false);
 
-    
+    const save = async (e: MouseEvent) => {
+      e.preventDefault();
+      const band = new Band({
+        id: bandId,
+        ...(bandSpotifyArtistId.value && { spotifyArtistId: bandSpotifyArtistId.value })
+      });
+      await bandStore.updateBand(band);
+      editMode.value = false;
+    }
  
     onMounted(async () => {
       try {
@@ -108,7 +117,8 @@ export default defineComponent({
       editMode,
       bandSpotifyArtistId,
       bandId,
-      tab
+      tab,
+      save,
     }
   }
 })
