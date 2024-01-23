@@ -116,3 +116,17 @@ export async function getBandCustomInclude<T extends Prisma.Subset<Prisma.BandIn
     include,
   })
 }
+
+export async function updateBand(
+  // eslint-disable-next-line max-len
+  band: Pick<Band, 'id'> & Partial<Pick<Band, 'cityId' | 'founded' | 'instagramHandle' | 'spotifyArtistId' |'websiteUrl' | 'name'>>
+) {
+  const prisma = await getPrismaClient();
+  const { id, ...data } = band;
+  return prisma.band.update({
+    where: {
+      id,
+    },
+    data
+  })
+}

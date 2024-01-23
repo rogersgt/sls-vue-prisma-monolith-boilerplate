@@ -139,3 +139,22 @@ export async function getBand(req: Request, res: Response) {
     return handleError(error as HttpError, res);
   }
 }
+
+export async function updateBand(req: Request, res: Response) {
+  try {
+    const bandId = req.params.bandId;
+    if (!bandId) {
+      throw new HttpError(400, 'bandId required');
+    }
+
+    const band = req.body as Partial<Band>;
+    const updatedBand = await bandService.updateBand({
+      ...band,
+      id: bandId
+    });
+    
+    return res.send(updatedBand);
+  } catch (error) {
+    return handleError(error as HttpError, res);
+  }
+}

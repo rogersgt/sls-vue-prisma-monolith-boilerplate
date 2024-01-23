@@ -5,7 +5,8 @@ import {
   getBand,
   listBandsByCity,
   listBandsForUser,
-  searchBands
+  searchBands,
+  updateBand
 } from '../controllers/band.controller';
 
 const router = Router();
@@ -16,5 +17,6 @@ router.post('/search', searchBands);
 router.get('/discover/:cityId', listBandsByCity);
 router.delete('/:bandId', deleteBand);
 router.get('/:bandId', getBand);
+router.put('/:bandId', updateBand);
 
 export default router;
