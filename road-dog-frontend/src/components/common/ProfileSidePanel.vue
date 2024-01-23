@@ -13,7 +13,7 @@
     <h2>{{ loggedInUser$?.firstName }} {{ loggedInUser$?.lastName }}</h2>
 
     <p class="flex align-middle"><font-awesome-icon icon="fa-envelope"></font-awesome-icon> {{ loggedInUser$?.email }}</p>
-    <p>Part of <router-link @click="sidePanelOpen = false" class="text-primary" to="/">{{ loggedInUser$?.bandMemberships.length }}</router-link> band{{ loggedInUser$?.bandMemberships.length === 1 ? '' : 's' }}</p>
+    <p>Part of <router-link @click="sidePanelOpen = false" class="text-primary" to="/">{{ loggedInUser$?.bandMemberships.length ?? 0 }}</router-link> band{{ loggedInUser$?.bandMemberships.length === 1 ? '' : 's' }}</p>
   </div>
 </template>
 

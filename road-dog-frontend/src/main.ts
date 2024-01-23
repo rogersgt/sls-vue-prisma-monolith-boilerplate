@@ -1,3 +1,5 @@
+import 'v-calendar/style.css';
+
 import './styles/main.scss'
 
 import { createApp } from 'vue'
@@ -24,6 +26,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 /* -- Vuetify -- */
+import VCalendar from 'v-calendar';
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
@@ -104,4 +107,5 @@ app.use(vue3GoogleLogin, {
   clientId: import.meta.env.VITE_GOOGLE_APP_ID
 })
 app.component('font-awesome-icon', FontAwesomeIcon)
+app.use(VCalendar, {})
 app.mount('#app')

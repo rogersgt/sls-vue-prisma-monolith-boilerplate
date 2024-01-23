@@ -9,28 +9,33 @@
 
       <v-window v-model="tab" class="bg-white rounded pa-6">
         <v-window-item value="bio">
-
           <div class="d-flex p-24 my-2 ga-6 w-100 justify-center">
             <band-links v-if="band$" :band="band$"></band-links>
           </div>
 
           <v-expansion-panels
             class="my-2"
-            v-if="band$?.spotifyArtistId"
           >
             <v-expansion-panel>
               <v-expansion-panel-title>
                 <h2>Music</h2>
               </v-expansion-panel-title>
               <v-expansion-panel-text>
-                <iframe :src="`https://open.spotify.com/embed/artist/${band$.spotifyArtistId}?utm_source=generator`" width="100%" height="352" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <div class="d-block p-0 my-2">
+                  <v-text-field id="spotifyArtistId" placeholder="Spotify Artist ID" v-if="editMode" v-model="bandSpotifyArtistId"></v-text-field>
+                  <label for="spotifyArtistId">Can be found at the end of the url copied from the artist page under "Share"</label>
+                  <!-- FIXME: hide edit button if no permissions -->
+                </div>
+                  <v-btn color="primary" v-if="editMode">Save</v-btn>
+                  <v-btn @click="editMode = !editMode" color="gray" v-if="editMode">Cancel</v-btn>
+                  <v-btn v-if="!editMode" @click="editMode = !editMode" color="secondary">Edit</v-btn>
+                <iframe v-if="band$?.spotifyArtistId" :src="`https://open.spotify.com/embed/artist/${band$.spotifyArtistId}?utm_source=generator`" width="100%" height="352" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
 
           <v-expansion-panels
             class="my-2"
-            v-if="band$?.instagramHandle"
           >
             <v-expansion-panel>
               <v-expansion-panel-title>
@@ -46,10 +51,7 @@
 
         <v-window-item value="schedule">
           <h2>Shows</h2>
-          <v-date-picker
-          class="w-100"
-            hide-header
-          ></v-date-picker>
+          <band-calendar :band="band$" v-if="band$"></band-calendar>
         </v-window-item>
       </v-window>
     </v-container>
@@ -64,11 +66,15 @@ import { computed } from 'vue';
 import { defineComponent } from 'vue';
 import { useRoute } from 'vue-router';
 import BandLinks from '@/components/band/BandLinks.vue';
+import BandCalendar from '@/components/band/BandCalendar.vue';
+import type { Band } from '@/types/core';
+import { watch } from 'vue';
 
 export default defineComponent({
   name: 'BandView',
   components: {
-    BandLinks
+    BandLinks,
+    BandCalendar
   },
   setup() {
     const route = useRoute();
@@ -76,8 +82,17 @@ export default defineComponent({
 
     const bandStore = useBandStore();
     const band$ = computed(() => bandStore.getBandById(bandId));
+    
+    const bandSpotifyArtistId = ref<string>(band$.value?.spotifyArtistId ?? '');
+    watch(() => band$.value, (newBandValue) => {
+      if (newBandValue?.spotifyArtistId) {
+        bandSpotifyArtistId.value = newBandValue.spotifyArtistId
+      }
+    })
 
     const tab = ref<'bio' | 'schedule'>('schedule');
+
+    const editMode = ref<boolean>(false);
  
     onMounted(async () => {
       try {
@@ -89,6 +104,8 @@ export default defineComponent({
     })
     return {
       band$,
+      editMode,
+      bandSpotifyArtistId,
       bandId,
       tab
     }

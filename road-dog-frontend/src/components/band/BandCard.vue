@@ -53,21 +53,7 @@
       <div :class="{
         'w-25': $vuetify.display.mdAndUp
       }">
-        <a class="d-flex mt-1 mb-1 text-info" target="_blank" v-if="band$?.instagramHandle" :href="`https://www.instagram.com/${band$.instagramHandle}`">
-          <img class="imgLink mt-auto mb-auto rounded-circle" src="@/assets/ig_icon.svg" alt="Instagram link">
-          <span class="mt-auto mb-auto">{{ band$.instagramHandle }}</span>
-          <font-awesome-icon class="mt-auto mb-auto ml-1" icon="fa-arrow-up-right-from-square"></font-awesome-icon>
-        </a>
-        <a class="d-flex mt-1 mb-1 text-info" target="_blank" v-if="band$?.spotifyArtistId" :href="`https://open.spotify.com/artist/${band$.spotifyArtistId}`">
-          <img class="imgLink mt-auto mb-auto rounded-circle" src="@/assets/spotify_icon.svg" alt="Spotify link">
-          <span class="mt-auto mb-auto">Spotify</span>
-          <font-awesome-icon class="mt-auto mb-auto ml-1" icon="fa-arrow-up-right-from-square"></font-awesome-icon>
-        </a>
-        <a class="d-flex mt-1 mb-1 text-info" target="_blank" v-if="band$?.websiteUrl" :href="band$.websiteUrl">
-          <img class="imgLink mt-auto mb-auto rounded-circle" src="@/assets/website.svg" alt="Website URL">
-          <span class="mt-auto mb-auto">Website</span>
-          <font-awesome-icon class="mt-auto mb-auto ml-1" icon="fa-arrow-up-right-from-square"></font-awesome-icon>
-        </a>
+        <band-links :band="band$" v-if="band$"></band-links>
       </div>
     </v-card-text>
   </v-card>
@@ -80,10 +66,14 @@ import { defineComponent } from 'vue';
 import { format } from 'date-fns';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import BandLinks from './BandLinks.vue';
 
 export default defineComponent({
   name: 'BandCard',
   props: ['bandId', 'showDeleteOption'],
+  components: {
+    BandLinks
+  },
   setup({ bandId }) {
     const bandStore = useBandStore();
     const band$ = computed(() => bandStore.getBandById(bandId));
