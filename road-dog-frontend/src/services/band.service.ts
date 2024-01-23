@@ -48,3 +48,14 @@ export async function getBandById(bandId: string) {
     ...data
   })
 }
+
+export async function updateBand(band: Band) {
+  const {
+    data
+  }: {
+    data: Band
+  } = await httpClient.put(`/band/${band.id}`);
+  return new Band({
+    ...data
+  })
+}

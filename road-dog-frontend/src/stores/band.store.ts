@@ -133,6 +133,11 @@ const useBandStore = defineStore('BandStore', () => {
     receiveBands([band]);
   };
 
+  const updateBand = async (band: Band) => {
+    const updatedBand = await bandService.updateBand(band);
+    receiveBands([updatedBand]);
+  }
+
   return {
     bandCache,
     createMyBand,
@@ -142,7 +147,8 @@ const useBandStore = defineStore('BandStore', () => {
     loggedInUserBands$,
     getBandById,
     fetchBandsForLoggedInUser,
-    receiveBands
+    receiveBands,
+    updateBand
   }
 });
 

@@ -149,7 +149,21 @@ export async function updateBand(req: Request, res: Response) {
 
     const band = req.body as Partial<Band>;
     const updatedBand = await bandService.updateBand({
-      ...band,
+      ...band.cityId && {
+        cityId: band.cityId
+      },
+      ...band.name && {
+        name: band.name
+      },
+      ...band.spotifyArtistId && {
+        spotifyArtistId: band.spotifyArtistId
+      },
+      ...band.websiteUrl && {
+        websiteUrl: band.websiteUrl
+      },
+      ...band.instagramHandle && {
+        instagramHandle: band.instagramHandle
+      },
       id: bandId
     });
     

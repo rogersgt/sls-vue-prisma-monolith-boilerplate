@@ -67,7 +67,6 @@ import { defineComponent } from 'vue';
 import { useRoute } from 'vue-router';
 import BandLinks from '@/components/band/BandLinks.vue';
 import BandCalendar from '@/components/band/BandCalendar.vue';
-import type { Band } from '@/types/core';
 import { watch } from 'vue';
 
 export default defineComponent({
@@ -93,6 +92,8 @@ export default defineComponent({
     const tab = ref<'bio' | 'schedule'>('schedule');
 
     const editMode = ref<boolean>(false);
+
+    
  
     onMounted(async () => {
       try {
