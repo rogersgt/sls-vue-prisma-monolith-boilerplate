@@ -21,6 +21,8 @@ model User {
 
   bandMemberships BandUser[] @relation("band_user_user_id")
   venueNotesCreated VenueNote[] @relation("venue_note_created_by_id")
+  showsCreated Show[] @relation("show_created_by_id")
+  showsUpdated Show[] @relation("show_updated_by_id")
 
   @@index([email])
   @@unique([email])
@@ -99,6 +101,9 @@ model Venue {
 
   venueNotes VenueNote[] @relation("venue_note_venue_id")
 
+  created DateTime @default(now()) @map("created")
+  updated DateTime @updatedAt @map("updated")
+
   @@map("venue")
 }
 
@@ -137,8 +142,7 @@ model Band {
   id String @id @default(uuid())
   name String
 
-  showsPlaying Show[]
-  showsOrganized Show[] @relation("show_band_organizer_id")
+  showsPlaying BandShow[] @relation("band_show_band_id")
   cityId String @map("city_id")
   city City @relation("band_city_id", fields: [cityId], references: [id])
 
@@ -150,6 +154,9 @@ model Band {
   websiteUrl String? @map("website_url")
   instagramHandle String? @map("instagram_handle")
   spotifyArtistId String? @map("spotify_artist_id")
+
+  created DateTime @default(now()) @map("created")
+  updated DateTime @updatedAt @map("updated")
 
   @@index([cityId])
   @@index([name])
@@ -173,24 +180,61 @@ model BandUser {
 
   role BandRole @default(MEMBER)
 
+  created DateTime @default(now()) @map("created")
+  updated DateTime @updatedAt @map("updated")
+
   @@index([userId])
   @@index([bandId])
   @@map("band_user")
 }
 
+model BandShow {
+  id String @id @default(uuid())
+  bandId String @map("band_id")
+  band Band @relation("band_show_band_id", fields: [bandId], references: [id], onDelete: Cascade)
+  showId String @map("show_id")
+  show Show @relation("band_show_show_id", fields: [showId], references: [id], onDelete: Cascade)
+
+  lineupOrder Int @map("lineup_order")
+  setStartTime DateTime? @map("set_start_time")
+
+  created DateTime @default(now()) @map("created")
+  updated DateTime @updatedAt @map("updated")
+
+  @@index([showId])
+  @@index([bandId])
+  @@map("band_show")
+}
+
+enum ShowStatus {
+  PENDING @map("pending")
+  CONFIRMED @map("confirmed")
+  CANCELLED @map("cancelled")
+}
+
 model Show {
   id String @id @default(uuid())
 
-  bandOrganizerId String @map("band_organizer_id")
-  bandOrganizer Band @relation("show_band_organizer_id", fields: [bandOrganizerId], references: [id])
-
+  bandsPlaying BandShow[] @relation("band_show_show_id")
   eventName String? @map("event_name")
-  bands Band[]
 
-  venueId String @map("venue_id")
-  venue Venue @relation("show_venue_id", fields: [venueId], references: [id])
+  venueId String? @map("venue_id")
+  venue Venue? @relation("show_venue_id", fields: [venueId], references: [id])
 
   date DateTime @db.Date
+  doorsOpenAt DateTime? @map("doors_open_at")
 
+  createdById String @map("created_by_id")
+  created DateTime @default(now()) @map("created")
+  createdBy User @relation("show_created_by_id", fields: [createdById], references: [id], onDelete: Cascade)
+
+  updatedById String @map("updated_by_id")
+  updated DateTime @updatedAt @map("updated")
+  updatedBy User @relation("show_updated_by_id", fields: [updatedById], references: [id], onDelete: Cascade)
+
+  status ShowStatus @default(PENDING)
+
+  @@index([venueId])
+  @@index([date])
   @@map("show")
 }

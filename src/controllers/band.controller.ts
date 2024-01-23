@@ -119,11 +119,12 @@ export async function getBand(req: Request, res: Response) {
           /* upcoming shows */
           showsPlaying: {
             where: {
-              date: {
-                gte: new Date()
+              show: {
+                date: {
+                  gte: new Date()
+                }
               }
-            },
-            
+            }
           }
         }
       }
