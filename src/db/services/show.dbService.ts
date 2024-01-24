@@ -46,6 +46,14 @@ export async function searchShows(
         }
       })
     },
+    include: {
+      bandsPlaying: {
+        include: {
+          band: true
+        }
+      },
+      venue: true,
+    },
     orderBy: {
       date: 'desc'
     },

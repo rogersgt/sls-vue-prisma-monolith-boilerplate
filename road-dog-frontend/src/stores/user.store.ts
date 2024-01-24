@@ -24,7 +24,7 @@ const useUserStore = defineStore('UserStore', () => {
 
   const receiveUsers = (userUpdates: User[]) => {
     const bandStore = useBandStore();
-    const newUsers = userUpdates.reduce((prev, curr) => {
+    const newUsers = userUpdates?.reduce((prev, curr) => {
       const { bandMemberships } = curr;
       const bands = bandMemberships.map(({ band, bandId }) => band ?? new Band({ id: bandId }));
       bandStore.receiveBands(bands);

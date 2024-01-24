@@ -21,11 +21,12 @@ const useBandStore = defineStore('BandStore', () => {
     }, [] as Band[]);
   })
 
-  const receiveBands = (BandUpdates: Band[]) => {
-    const newBands = BandUpdates.reduce((prev, curr) => {
+  const receiveBands = (bandUpdates: Band[]) => {
+    console.log(bandUpdates)
+    const newBands = bandUpdates.reduce((prev, curr) => {
       const existingMemberships = bandCache.value[curr.id]?.bandMemberShips ?? [];
       const allExistingMemberships = existingMemberships.concat(curr.bandMemberShips).reduce((prev, curr) => {
-        const existingMembershipIndx = existingMemberships.findIndex(({ userId, bandId }) => curr.bandId === bandId && curr.userId === userId);
+        const existingMembershipIndx = existingMemberships.findIndex((membership) => curr && curr?.bandId === membership?.bandId && curr?.userId === membership?.userId);
         if (existingMembershipIndx === -1) {
           return prev.concat(curr);
         }
@@ -39,7 +40,7 @@ const useBandStore = defineStore('BandStore', () => {
         return prev;
       }, [] as BandMembership[])
 
-      const users = curr.bandMemberShips.reduce((prev, curr) => {
+      const users = curr.bandMemberShips?.reduce((prev, curr) => {
         if (curr.user) return prev.concat([curr.user])
         return prev;
       }, [] as User[]);

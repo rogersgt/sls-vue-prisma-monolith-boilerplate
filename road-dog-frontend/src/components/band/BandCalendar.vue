@@ -1,12 +1,11 @@
 <template>
   <v-calendar
-    :dates="dates"
     borderless
     transparent
     expanded
     v-on:dayclick="handleDayClick"
     show-adjacent-months
-    :attributes="[{ highlight: true }]"
+    :attributes="calendarAttributes$"
   >
   </v-calendar>
   <v-dialog
@@ -18,7 +17,7 @@
         <h1>{{ formattedDate$ }}</h1>
         <v-form @submit="scheduleShow">
         <div class="d-flex ga-2">
-          <v-btn color="grey">Cancel</v-btn>
+          <v-btn color="grey" @click="showDialog = false">Cancel</v-btn>
           <v-btn color="primary" type="submit">Schedule Show</v-btn>
           <p v-if="errorMessage" class="text-error">{{ errorMessage }}</p>
         </div>
@@ -39,6 +38,8 @@ import { computed } from 'vue';
 import useBandStore from '@/stores/band.store';
 import { format } from 'date-fns';
 import useShowStore from '@/stores/show.store';
+import { onMounted } from 'vue';
+import { watch } from 'vue';
 
 export default defineComponent({
   name: 'BandCalendar',
@@ -56,6 +57,15 @@ export default defineComponent({
 
     const bandStore = useBandStore();
     const band$ = computed(() => bandStore.getBandById(band?.id ?? ''));
+    const bandShows$ = computed(() => showStore.selectShowsForBand(band?.id ?? ''));
+    watch(() => bandShows$.value, (shows) => {
+      console.log(shows)
+      dates.value = shows.map(({ date }) => date);
+    });
+    const calendarAttributes$ = computed(() => [{
+      highlight: true,
+      dates: dates.value
+    }]);
 
     const handleDayClick = (day: CalendarDay, e: MouseEvent) => {
       e.preventDefault();
@@ -64,7 +74,7 @@ export default defineComponent({
       showDialog.value = true;
     };
 
-    const formatDate = (date: Date) => format(date, 'YYY-MM-dd');
+    const formatDate = (date: Date) => format(date, 'yyy-MM-dd');
     const formattedDate$ = computed(() => activeCalendarDay.value ? formatDate(activeCalendarDay.value.date) : undefined);
 
     const scheduleShow = async (e: Event) => {
@@ -88,8 +98,20 @@ export default defineComponent({
       }
     };
 
+    onMounted(async () => {
+      if (!band?.id) return;
+      try {
+        await showStore.fetchShowsForBand(band.id);
+      } catch (error) {
+        console.error(error);
+        // TODO: error toast
+      }
+    });
+
     return {
       activeCalendarDay,
+      calendarAttributes$,
+      bandShows$,
       band$,
       dates,
       errorMessage,
