@@ -220,3 +220,59 @@ export class Genre extends BaseEntityClass {
     this.name = name ?? '';
   }
 }
+
+export class BandShow {
+  id: string;
+  bandId: string;
+  band?: Band;
+  showId: string;
+  show?: Show;
+
+  constructor({
+    id,
+    bandId,
+    showId,
+    band,
+    show
+  }: {
+    id?: string;
+    bandId?: string;
+    showId?: string;
+    band?: Band;
+    show?: Show;
+  }) {
+    this.id = id ?? '';
+    this.bandId = bandId ?? '';
+    this.showId = showId ?? '';
+    this.band = band;
+    this.show = show;
+  }
+}
+
+export class Show {
+  id: string;
+  eventName: string;
+  date: Date;
+  doorsOpenAt?: Date;
+  bandsPlaying: BandShow[];
+
+  constructor({
+    id,
+    eventName,
+    date,
+    doorsOpenAt,
+    bandsPlaying
+  }: {
+    id?: string;
+    eventName?: string;
+    date?: Date;
+    doorsOpenAt?: Date;
+    bandsPlaying?: BandShow[];
+  }) {
+    this.id = id ?? '';
+    this.eventName = eventName ?? '';
+    this.date = date ?? new Date();
+    this.doorsOpenAt = doorsOpenAt;
+    this.bandsPlaying = bandsPlaying?.map((bandShow) => new BandShow(bandShow)) ?? [];
+  }
+}
