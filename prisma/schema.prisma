@@ -201,6 +201,7 @@ model BandShow {
   created DateTime @default(now()) @map("created")
   updated DateTime @updatedAt @map("updated")
 
+  @@unique([showId, bandId])
   @@index([showId])
   @@index([bandId])
   @@map("band_show")

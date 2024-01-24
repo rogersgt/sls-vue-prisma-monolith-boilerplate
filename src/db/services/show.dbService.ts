@@ -1,4 +1,4 @@
-import { Show, ShowStatus } from '@prisma/client';
+import { BandShow, Show, ShowStatus } from '@prisma/client';
 import getPrismaClient from '../client';
 import { ApiPagination } from '../../types/api';
 import { API_PAGE_SIZE } from '../../constants';
@@ -40,13 +40,32 @@ export async function listShowsForBand(
 }
 
 export async function createShow(
-  show: Pick<Show, 'createdById' | 'date'> & Partial<Pick<Show, 'doorsOpenAt' | 'eventName' | 'status' | 'venueId'>>
+  show: Pick<Show, 'createdById' | 'date'> & Partial<Pick<Show, 'doorsOpenAt' | 'eventName' | 'status' | 'venueId'>> & {
+    bandsPlaying?: Pick<BandShow, 'bandId' | 'lineupOrder'>[]
+  }
 ) {
   const prisma = await getPrismaClient();
+  const { bandsPlaying, ...showData } = show;
   return prisma.show.create({
     data: {
-      ...show,
-      updatedById: show.createdById
+      ...showData,
+      updatedById: show.createdById,
+      ...(bandsPlaying?.length && { 
+        bandsPlaying: {
+          createMany: {
+            data: bandsPlaying
+          }
+        }
+      })
+    },
+    include: {
+      ...(bandsPlaying?.length && {
+        bandsPlaying: {
+          include: {
+            band: true
+          }
+        }
+      })
     }
-  })
+  });
 }
