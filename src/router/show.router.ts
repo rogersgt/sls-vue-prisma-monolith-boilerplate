@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { createShow } from '../controllers/show.controller';
+import { createShow, searchShows } from '../controllers/show.controller';
 
 const router = Router();
 
 router.post('/', createShow);
+router.post('/search', searchShows);
 
 export default router;

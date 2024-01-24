@@ -1,41 +1,55 @@
 import { BandShow, Show, ShowStatus } from '@prisma/client';
 import getPrismaClient from '../client';
 import { ApiPagination } from '../../types/api';
-import { API_PAGE_SIZE } from '../../constants';
 
-export async function listShowsForBand(
-  bandId: string,
+export async function searchShows(
   {
+    bandId,
     includeUnconfirmedShows = false,
-    pagination = {
-      skip: 0,
-      take: API_PAGE_SIZE
-    }
+    pagination,
+    dateRange,
   }: Partial<{
+    bandId: string;
     includeUnconfirmedShows: boolean;
     pagination: ApiPagination;
+    dateRange: {
+      startDate: Date;
+      endDate: Date;
+    };
   }>
 ) {
   const prisma = await getPrismaClient();
   return prisma.show.findMany({
     where: {
-      bandsPlaying: {
-        some: {
-          band: {
-            id: bandId
+      ...(bandId && { 
+        bandsPlaying: {
+          some: {
+            band: {
+              id: bandId
+            }
           }
         }
-      },
+      }),
       ...(!includeUnconfirmedShows && {
-        status: {
-          not: ShowStatus.PENDING
+        AND: {
+          status: {
+            not: ShowStatus.PENDING
+          }
+        }
+      }),
+      ...(dateRange && {
+        AND: {
+          date: {
+            gte: dateRange.startDate,
+            lte: dateRange.endDate
+          }
         }
       })
     },
     orderBy: {
       date: 'desc'
     },
-    ...pagination
+    ...(pagination && { ...pagination })
   })
 }
 

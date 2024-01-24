@@ -34,3 +34,35 @@ export async function createShow(req: Request, res: Response) {
     return handleError(error as HttpError, res);
   }
 }
+
+export async function searchShows(req: Request, res: Response) {
+  try {    
+    const { bandId, dateRange, startDate } = req.body as Partial<{
+      bandId: string;
+      dateRange: {
+        startDate: Date;
+        endDate: Date;
+      };
+      startDate: Date;
+    }>;
+    if (!bandId && !dateRange && !startDate) {
+      throw new HttpError(400, 'At least one of bandId, dateRange, or startDate is required')
+    }
+
+    if (dateRange && startDate) {
+      throw new HttpError(400, 'Must specifu either dateRange or startDate, but not both');
+    }
+
+    const shows = await showService.searchShows({
+      bandId,
+      dateRange: {
+        startDate: dateRange?.startDate ?? startDate ?? new Date(),
+        endDate: dateRange?.endDate ?? startDate ?? new Date()
+      },
+      // includeUnconfirmedShows: 
+    });
+    return res.send(shows);
+  } catch (error) {
+    return handleError(error as HttpError, res);
+  }
+}
