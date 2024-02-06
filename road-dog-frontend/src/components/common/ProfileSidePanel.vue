@@ -62,6 +62,11 @@ export default defineComponent({
   align-content: center;
   min-width: 300px;
   margin-left: -40%;
+  box-shadow: 5px 5px 10px #202021 inset;
+
+  img {
+    box-shadow: 5px 5px 10px #202021;
+  }
 }
 
 .profile-image {

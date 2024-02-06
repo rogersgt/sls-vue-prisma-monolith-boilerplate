@@ -3,6 +3,7 @@
     activator="parent"
     transition="dialog-bottom-transition"
     :width="500"
+    :height="500"
     ref="dialog"
     v-model="openDialog"
   >

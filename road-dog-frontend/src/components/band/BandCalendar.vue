@@ -40,6 +40,7 @@ import { format } from 'date-fns';
 import useShowStore from '@/stores/show.store';
 import { onMounted } from 'vue';
 import { watch } from 'vue';
+import { convertLocalDateToUTCIgnoringTimezone } from '@/utils/date';
 
 export default defineComponent({
   name: 'BandCalendar',
@@ -123,4 +124,4 @@ export default defineComponent({
     }
   },
 })
-</script>
+</script>../../utils/date

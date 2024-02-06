@@ -1,3 +1,5 @@
+import { addMinutes } from 'date-fns';
+
 export class BaseEntityClass {}
 
 export class User extends BaseEntityClass {
@@ -271,7 +273,11 @@ export class Show {
   }) {
     this.id = id ?? '';
     this.eventName = eventName ?? '';
-    this.date = date ?? new Date();
+    // default to local TZ padding. Date is stored in DB without time
+    // if you don't convert this to local, the browser may interpret this as the wrong calendar day
+    // TODO: use the venue TZ if available
+    const currentTzOffset = new Date().getTimezoneOffset();
+    this.date = addMinutes(date ?? new Date(), currentTzOffset);
     this.doorsOpenAt = doorsOpenAt;
     this.bandsPlaying = bandsPlaying?.map((bandShow) => new BandShow(bandShow)) ?? [];
   }
