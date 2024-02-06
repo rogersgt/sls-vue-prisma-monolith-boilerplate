@@ -1,9 +1,9 @@
 <template>
-  <v-app-bar class="d-flex bg-white nav">
+  <v-app-bar class="d-flex bg-primary-darken-4 nav">
     <v-btn variant="flat" @click="toggleSideBar($event)">
       <font-awesome-icon icon="fa-bars" class="text-primary"></font-awesome-icon>
     </v-btn>
-    <img class="w-25" src="@/assets/Road Dog_Official_LOGO_020124-03.png" alt="Road Dog">
+    <img class="w-25" src="@/assets/Road Dog_Official_LOGO_020124-04.png" alt="Road Dog">
   </v-app-bar>
 </template>
 
