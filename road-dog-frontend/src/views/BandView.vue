@@ -1,7 +1,7 @@
 <template>
   <v-sheet :min-height="600" :elevation="22" class="d-flex justify-center text-center bg-grey w-100">
     <v-container>
-      <h1 class="text-white">{{ band$?.name }}</h1>
+      <h1 class="text-white protest-riot-bold text-primary-darken-4">{{ band$?.name }}</h1>
       <v-tabs v-model="tab">
         <v-tab :class="{ 'mx-auto': $vuetify.display.mdAndDown }" value="bio">About</v-tab>
         <v-tab :class="{ 'mx-auto': $vuetify.display.mdAndDown }" value="schedule">Schedule</v-tab>
