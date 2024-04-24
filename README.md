@@ -1,4 +1,4 @@
-# road-dog-app
+# sls-vue-ssr-prisma-boilerplate
 Band tour scheduling
 
 ## development
