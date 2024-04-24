@@ -4,12 +4,12 @@ import * as winston from 'winston';
  * Winston docs https://github.com/winstonjs/winston
  */
 
-const { LOG_LEVEL = 'info', IS_OFFLINE } = process.env;
+const { LOG_LEVEL = 'info', IS_OFFLINE, APP_NAME = 'app' } = process.env;
 
 const logger = winston.createLogger({
   level: LOG_LEVEL,
   defaultMeta: {
-    service: 'road-dog',
+    service: APP_NAME,
   },
   format: winston.format.combine(
     winston.format.errors({ stack: true }),

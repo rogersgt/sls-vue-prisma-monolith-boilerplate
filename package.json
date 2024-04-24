@@ -1,5 +1,5 @@
 {
-  "name": "road-dog-app",
+  "name": "sls-vue-ssr-prisma-boilerplate",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
@@ -15,7 +15,7 @@
     "db:gen:client": "prisma generate client",
     "db:migrate:dev": "prisma migrate dev && npm run db:gen:client && prisma db seed",
     "db:migrate:deploy": "prisma migrate deploy && prisma db seed",
-    "postinstall": "(cd deploy/plugins/serverless-run-remote-migrations && npm i) && (cd road-dog-frontend && npm i)"
+    "postinstall": "(cd deploy/plugins/serverless-run-remote-migrations && npm i)"
   },
   "author": "Grady T Rogers",
   "license": "UNLICENSED",
