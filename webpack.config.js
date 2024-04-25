@@ -3,6 +3,7 @@ const slsw = require('serverless-webpack');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { IgnorePlugin } = require('webpack');
 
 const CWD = process.cwd();
 
@@ -66,11 +67,17 @@ module.exports = {
   },
   // We still want type checking, just without the burden on build performance, 
   // so we use a plugin to take care of it on another thread.
-  plugins: [new ForkTsCheckerWebpackPlugin(), new CopyWebpackPlugin({
-    patterns: [
-      {
-        from: 'src/client/dist/**',
-      }
-    ]
-  })],
+  plugins: [
+    new ForkTsCheckerWebpackPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/client/dist/**',
+        }
+      ]
+    }),
+    new IgnorePlugin({
+      resourceRegExp: /client/
+    })
+  ],
 };

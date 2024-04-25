@@ -28,9 +28,10 @@
     "sourceType": "module"
   },
   "include": [
-    "./src",
+    "./src"
   ],
   "exclude": [
-    "./dist"
+    "./dist",
+    "./src/client/dist"
   ],
 }
