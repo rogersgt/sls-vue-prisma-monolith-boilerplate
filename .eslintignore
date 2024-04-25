@@ -1,2 +1,2 @@
 deploy/plugins
-webpack.config.js
+webpack.*.js

@@ -8,7 +8,12 @@ configValidationMode: warn
 deprecationNotificationMode: warn:summary
 
 package:
-  individually: true
+  # individually: true
+  include:
+    - src/client/index.html
+    - src/client/style.css
+    - src/client/dist/**
+    - node_modules/vue/dist/vue.runtime.esm-browser.js
 
 provider:
   name: aws
@@ -43,7 +48,7 @@ custom:
     httpPort: ${self:custom.httpPort}
   # API Domain Configuration
   customDomain:
-    domainName: ${env:API_DOMAIN_NAME}
+    domainName: ${env:DOMAIN_NAME}
     stage: $default
     basePath: ''
     certificateArn: ${env:AWS_ACM_CERTIFICATE_ARN}
@@ -58,14 +63,10 @@ custom:
       LOG_LEVEL: ${env:LOG_LEVEL, 'debug'}
       STAGE: ${self:provider.stage}
       LOCALSTACK_ENDPOINT: http://localhost:4567
-      ALLOW_CORS_ORIGIN: ${env:ALLOW_CORS_ORIGIN, 'http://localhost:3030'}
-      GOOGLE_APP_CLIENT_ID: ${ssm:/app/${self:provider.stage}/${self:service}/GOOGLE_APP_CLIENT_ID}
     prod:
       APP_NAME: ${self:service}
       LOG_LEVEL: ${env:LOG_LEVEL, 'debug'}
       STAGE: ${self:provider.stage}
-      ALLOW_CORS_ORIGIN: https://${env:APP_DOMAIN, '*'}
-      GOOGLE_APP_CLIENT_ID: ${ssm:/app/${self:provider.stage}/${self:service}/GOOGLE_APP_CLIENT_ID}
   serverless-run-remote-migrations:
     build:
       dockerfile: ./deploy/migrations.Dockerfile
@@ -88,7 +89,13 @@ custom:
     includeModules: true
 
 functions:
-  api:
-    handler: src/index.api
+  app:
+    handler: src/index.handler
     events:
       - httpApi: '*'
+    package:
+      patterns:
+        - src/client/dist/**
+        - node_modules/vue/dist/vue.runtime.esm-browser.js
+        - src/client/index.html
+        - src/client/style.css
