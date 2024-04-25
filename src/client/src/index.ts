@@ -1,3 +1,5 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/main.scss';
 import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 

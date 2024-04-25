@@ -5,17 +5,12 @@ import helmet from 'helmet';
 const router = Router();
 
 // frontend views
-// router.get('/index.js', expressStatic('src/client/dist/index.js', {
-//   setHeaders: (res) => {
-//     res.set('Content-Type', 'application/javascript');
-//   }
-// }));
 router.use('/',
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-eval'", "'unsafe-inline'", 'https://unpkg.com'],
-      styleSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-eval'", "'unsafe-inline'"],
     }
   }),
   expressStatic('src/client/dist')
