@@ -73,7 +73,7 @@ custom:
         - db:migrate:deploy
       aws:
         stackName: ${self:service}-${self:provider.stage}-db-migrations
-        securityGroupId: sg-040f3e97dca057752
+        securityGroupId: sg-xxxxxxxx
         secret:
           name: DATABASE_URL
           valueFrom: arn:aws:ssm:${self:provider.region}:${aws:accountId}:parameter/app/${self:provider.stage}/${self:service}/DATABASE_URL
