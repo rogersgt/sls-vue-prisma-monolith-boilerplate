@@ -1,2 +1,3 @@
 deploy/plugins
 webpack.*.js
+src/client/dist

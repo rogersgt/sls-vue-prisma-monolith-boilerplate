@@ -7,14 +7,6 @@ configValidationMode: warn
 
 deprecationNotificationMode: warn:summary
 
-package:
-  # individually: true
-  include:
-    - src/client/index.html
-    - src/client/style.css
-    - src/client/dist/**
-    - node_modules/vue/dist/vue.runtime.esm-browser.js
-
 provider:
   name: aws
   runtime: nodejs18.x
@@ -94,8 +86,5 @@ functions:
     events:
       - httpApi: '*'
     package:
-      patterns:
-        - src/client/dist/**
-        - node_modules/vue/dist/vue.runtime.esm-browser.js
-        - src/client/index.html
-        - src/client/style.css
+      include:
+        - src/client/dist
